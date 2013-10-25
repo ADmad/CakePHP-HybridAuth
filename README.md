@@ -85,7 +85,7 @@ option is specified as shown in example above the specified method from the `Use
 model is called. The callback method can be similar to this:
 
     <?php
-    public function hybridRegister(string $provider, object $profile) {
+    public function hybridRegister($provider, stdClass $profile) {
         $profile = (array)$profile;
         $data = array(
             'provider' => $provider,
