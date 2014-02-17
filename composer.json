@@ -1,0 +1,22 @@
+{
+    "name": "ADmad/CakePHP-HybridAuth",
+    "description": "CakePHP-HybridAuth",
+    "type": "cakephp-plugin",
+    "keywords": ["cakephp", "hybridauth", "social", "login", "authentication"],
+    "homepage": "https://github.com/ADmad/CakePHP-HybridAuth",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ADmad",
+            "homepage": "https://github.com/ADmad",
+            "role": "Author"
+        }
+    ],
+    "require": {
+        "composer/installers": "*",
+        "hybridauth/hybridauth": "dev-master"
+    },
+    "extra": {
+        "installer-name": "HybridAuth"
+    }
+}
