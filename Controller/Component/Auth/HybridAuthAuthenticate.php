@@ -1,14 +1,17 @@
 <?php
 App::uses('CakeSession', 'Model/Datasource');
 App::uses('FormAuthenticate', 'Controller/Component/Auth');
-App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
+
+if (!class_exists('Hybrid_Auth')) {
+	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
+}
 
 /**
  * HybridAuth Authenticate
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
-*/
+ */
 class HybridAuthAuthenticate extends FormAuthenticate {
 
 /**
@@ -56,7 +59,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 /**
  * Check if a provider already connected return user record if available
  *
- * @param  CakeRequest $request CakeRequest instance
+ * @param CakeRequest $request CakeRequest instance
  * @return boolean|array User array or false
  */
 	public function getUser($request) {

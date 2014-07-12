@@ -1,8 +1,11 @@
 <?php
 App::uses('AppController', 'Controller');
 App::uses('CakeSession', 'Model/Datasource');
-App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
-App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Endpoint');
+
+if (!class_exists('Hybrid_Auth')) {
+	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
+	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Endpoint');
+}
 
 /**
  * HybridAuth Controller
@@ -12,13 +15,28 @@ App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Endpoint');
  */
 class HybridAuthController extends AppController {
 
+/**
+ * Don't inherit any models from AppController
+ *
+ * @var bool
+ */
 	public $uses = false;
 
+/**
+ * Allow method "endpoint"
+ *
+ * @return void
+ */
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->allow('endpoint');
 	}
 
+/**
+ * Endpoint method
+ *
+ * @return void
+ */
 	public function endpoint() {
 		CakeSession::start();
 		Hybrid_Endpoint::process();

@@ -1,0 +1,20 @@
+{
+  "name": "admad/cakephp-hybridauth",
+  "description": "A CakePHP plugin for using the HybridAuth social sign on library",
+  "type": "cakephp-plugin",
+  "keywords": [
+    "cakephp",
+    "hybridauth",
+    "social signon",
+    "multi provider"
+  ],
+  "homepage": "http://github.com/ADmad/CakePHP-HybridAuth",
+  "license": "MIT",
+  "require": {
+    "composer/installers": "*",
+    "hybridauth/hybridauth": "dev-master"
+  },
+  "extra": {
+    "installer-name": "HybridAuth"
+  }
+}
