@@ -15,6 +15,13 @@ if (!class_exists('Hybrid_Auth')) {
 class HybridAuthAuthenticate extends FormAuthenticate {
 
 /**
+ * HybridAuth instance
+ *
+ * @var HybridAuth
+ */
+	public $hybridAuth = null;
+
+/**
  * Constructor
  *
  * @param ComponentCollection $collection The Component collection used on this request.
