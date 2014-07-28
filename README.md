@@ -23,7 +23,7 @@ If you haven't already done so include composer's autoloader in your `bootrap.ph
 	// Code below is as suggested on http://mark-story.com/posts/view/installing-cakephp-with-composer
 
 	// Load composer autoload.
-	require APP . '/Vendor/autoload.php';
+	require APP . 'Vendor/autoload.php';
 
 	// Remove and re-prepend CakePHP's autoloader as composer thinks it is the most important.
 	// See https://github.com/composer/composer/commit/c80cb76b9b5082ecc3e5b53b1050f76bb27b127b
