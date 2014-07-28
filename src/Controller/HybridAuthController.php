@@ -1,11 +1,8 @@
 <?php
-App::uses('AppController', 'Controller');
-App::uses('CakeSession', 'Model/Datasource');
+namespace ADmad\HybridAuth\Controller;
 
-if (!class_exists('Hybrid_Auth')) {
-	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
-	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Endpoint');
-}
+use App\Controller\AppController;
+use Cake\Event\Event;
 
 /**
  * HybridAuth Controller
@@ -16,19 +13,13 @@ if (!class_exists('Hybrid_Auth')) {
 class HybridAuthController extends AppController {
 
 /**
- * Don't inherit any models from AppController
- *
- * @var bool
- */
-	public $uses = false;
-
-/**
  * Allow method "endpoint"
  *
+ * @param \Cake\Event\Event $event Before filter event
  * @return void
  */
-	public function beforeFilter() {
-		parent::beforeFilter();
+	public function beforeFilter(Event $event) {
+		parent::beforeFilter($event);
 		$this->Auth->allow('endpoint');
 	}
 
@@ -38,8 +29,8 @@ class HybridAuthController extends AppController {
  * @return void
  */
 	public function endpoint() {
-		CakeSession::start();
-		Hybrid_Endpoint::process();
+		$this->request->session()->start();
+		\Hybrid_Endpoint::process();
 	}
 
 }

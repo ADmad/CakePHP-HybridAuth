@@ -6,6 +6,8 @@
  * For full copyright and license information, please see the LICENSE.txt
  */
 
+use Cake\Core\Configure;
+
 if (file_exists(APP . 'Config' . DS . 'hybridauth.php')) {
 	Configure::load('hybridauth');
 } else {

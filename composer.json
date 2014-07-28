@@ -14,7 +14,10 @@
     "composer/installers": "*",
     "hybridauth/hybridauth": "dev-master"
   },
-  "extra": {
-    "installer-name": "HybridAuth"
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "ADmad\\HybridAuth\\": "src"
+    }
   }
 }

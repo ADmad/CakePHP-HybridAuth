@@ -1,10 +1,13 @@
 <?php
-App::uses('CakeSession', 'Model/Datasource');
-App::uses('FormAuthenticate', 'Controller/Component/Auth');
+namespace ADmad\HybridAuth\Auth;
 
-if (!class_exists('Hybrid_Auth')) {
-	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
-}
+use Cake\Auth\FormAuthenticate;
+use Cake\Core\Configure;
+use Cake\Controller\ComponentRegistry;
+use Cake\Error\Exception;
+use Cake\Network\Request;
+use Cake\Network\Response;
+use Cake\Routing\Router;
 
 /**
  * HybridAuth Authenticate
@@ -24,39 +27,38 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 /**
  * Constructor
  *
- * @param ComponentCollection $collection The Component collection used on this request.
- * @param array $settings Array of settings to use.
+ * @param \Cake\Controller\ComponentRegistry $registry The Component registry
+ *   used on this request.
+ * @param array $config Array of config to use.
  */
-	public function __construct(ComponentCollection $collection, $settings) {
-		$this->settings = array_merge(
-			$this->settings,
-			array(
-				'fields' => array(
-					'provider' => 'provider',
-					'provider_uid' => 'provider_uid',
-					'openid_identifier' => 'openid_identifier'
-				)
-			)
-		);
+	public function __construct(ComponentRegistry $registry, $config) {
+		$this->config([
+			'fields' => [
+				'provider' => 'provider',
+				'provider_uid' => 'provider_uid',
+				'openid_identifier' => 'openid_identifier'
+			]
+		]);
 
-		parent::__construct($collection, $settings);
+		parent::__construct($registry, $config);
 	}
 
 /**
  * Checks the fields to ensure they are supplied.
  *
- * @param CakeRequest $request The request that contains login information.
- * @param string $model The model used for login verification.
+ * @param \Cake\Network\Request $request The request that contains login
+ *   information.
  * @param array $fields The fields to be checked.
- * @return boolean|string False if the fields have not been supplied. Provider name if they exist.
+ * @return string|bool Provider name if it exists, false if required fields have
+ *   not been supplied.
  */
-	protected function _checkFields(CakeRequest $request, $model, $fields) {
-		if (empty($request->data[$model][$fields['provider']])) {
-			return false;
-		}
-
-		$provider = $request->data[$model][$fields['provider']];
-		if ($provider === 'OpenID' && empty($request->data[$model][$fields['openid_identifier']])) {
+	protected function _checkFields(Request $request, array $fields) {
+		$provider = $request->data($fields['provider']);
+		if (empty($provider) ||
+			($provider === 'OpenID' &&
+				!$request->data($fields['openid_identifier'])
+			)
+		) {
 			return false;
 		}
 
@@ -66,11 +68,11 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 /**
  * Check if a provider already connected return user record if available
  *
- * @param CakeRequest $request CakeRequest instance
- * @return boolean|array User array or false
+ * @param Request $request Request instance
+ * @return array|bool User array on success, false on failure.
  */
-	public function getUser(CakeRequest $request) {
-		$this->_init();
+	public function getUser(Request $request) {
+		$this->_init($request);
 		$idps = $this->hybridAuth->getConnectedProviders();
 		foreach ($idps as $provider) {
 			$adapter = $this->hybridAuth->getAdapter($provider);
@@ -82,33 +84,28 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 /**
  * Authenticate a user based on the request information.
  *
- * @param CakeRequest $request Request to get authentication information from.
- * @param CakeResponse $response A response object that can have headers added.
- * @return mixed Either false on failure, or an array of user data on success.
- * @throws CakeException
+ * @param Request $request Request to get authentication information from.
+ * @param Response $response A response object that can have headers added.
+ * @return array|bool User array on success, false on failure.
  */
-	public function authenticate(CakeRequest $request, CakeResponse $response) {
-		$userModel = $this->settings['userModel'];
-		list(, $model) = pluginSplit($userModel);
-		$fields = $this->settings['fields'];
+	public function authenticate(Request $request, Response $response) {
+		$fields = $this->_config['fields'];
 
-		if (empty($request->data[$model])) {
+		if (!$request->data($fields['provider'])) {
 			return $this->getUser($request);
 		}
 
-		$provider = $this->_checkFields($request, $model, $fields);
+		$provider = $this->_checkFields($request, $fields);
 		if (!$provider) {
 			return false;
 		}
 
-		$params = array();
+		$params = [];
 		if ($provider === 'OpenID') {
-			$params = array(
-				'openid_identifier' => $request->data[$model][$fields['openid_identifier']]
-			);
+			$params['openid_identifier'] = $request->data[$fields['openid_identifier']];
 		}
 
-		$this->_init();
+		$this->_init($request);
 		$adapter = $this->hybridAuth->authenticate($provider, $params);
 
 		if ($adapter) {
@@ -120,17 +117,18 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 /**
  * Initialize hybrid auth
  *
+ * @param \Cake\Network\Request $request Request instance
  * @return void
- * @throws CakeException
+ * @throws \Cake\Error\Exception
  */
-	protected function _init() {
-		CakeSession::start();
+	protected function _init(Request $request) {
+		$request->session()->start();
 		$hybridConfig = Configure::read('HybridAuth');
 		if (empty($hybridConfig['base_url'])) {
 			$hybridConfig['base_url'] = Router::url(
 				array(
-					'plugin' => 'hybrid_auth',
-					'controller' => 'hybrid_auth',
+					'plugin' => 'ADmad/HybridAuth',
+					'controller' => 'HybridAuth',
 					'action' => 'endpoint'
 				),
 				true
@@ -138,13 +136,13 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 		}
 
 		try {
-			$this->hybridAuth = new Hybrid_Auth($hybridConfig);
-		} catch (Exception $e) {
+			$this->hybridAuth = new \Hybrid_Auth($hybridConfig);
+		} catch (\Exception $e) {
 			if ($e->getCode() < 5) {
-				throw new CakeException($e->getMessage());
+				throw new Exception($e->getMessage());
 			} else {
-				$this->_Collection->Auth->flash($e->getMessage());
-				$this->hybridAuth = new Hybrid_Auth($hybridConfig);
+				$this->_registry->Auth->flash($e->getMessage());
+				$this->hybridAuth = new \Hybrid_Auth($hybridConfig);
 			}
 		}
 	}
@@ -160,28 +158,32 @@ class HybridAuthAuthenticate extends FormAuthenticate {
  * @return array User record
  */
 	protected function _getUser($provider, $adapter) {
-		$fields = $this->settings['fields'];
-		$userModel = $this->settings['userModel'];
 		$providerProfile = $adapter->getUserProfile();
-		$conditions = array(
-			$userModel . '.' . $fields['provider'] => $provider,
-			$userModel . '.' . $fields['provider_uid'] => $providerProfile->identifier
-		);
-		$user = $this->_findUser($conditions);
+
+		$userModel = $this->_config['userModel'];
+		list(, $model) = pluginSplit($userModel);
+		$fields = $this->_config['fields'];
+
+		$conditions = [
+			$model . '.' . $fields['provider'] => $provider,
+			$model . '.' . $fields['provider_uid'] => $providerProfile->identifier
+		];
+
+		$user = $this->_fetchUserFromDb($conditions);
 		if ($user) {
 			return $user;
 		}
 
-		if (!empty($this->settings['registrationCallback'])) {
+		if (!empty($this->_config['registrationCallback'])) {
 			$return = call_user_func_array(
 				array(
-					ClassRegistry::init($this->settings['userModel']),
-					$this->settings['registrationCallback']
+					TableRegistry::get($userModel),
+					$this->_config['registrationCallback']
 				),
 				array($provider, $providerProfile)
 			);
 			if ($return) {
-				$user = $this->_findUser($conditions);
+				$user = $this->_fetchUserFromDb($conditions);
 				if ($user) {
 					return $user;
 				}
@@ -192,13 +194,46 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 	}
 
 /**
+ * Fetch user from database matching required conditions
+ *
+ * @param array $conditions Query conditions
+ * @return array|bool User array on success, false on failure.
+ */
+	protected function _fetchUserFromDb(array $conditions) {
+		$scope = $this->_config['scope'];
+		if ($scope) {
+			$conditions = array_merge($conditions, $scope);
+		}
+
+		$table = TableRegistry::get($this->_config['userModel'])->find('all');
+
+		$contain = $this->_config['contain'];
+		if ($contain) {
+			$table = $table->contain($contain);
+		}
+
+		$result = $table
+			->where($conditions)
+			->hydrate(false)
+			->first();
+
+		if ($result) {
+			if (isset($this->_config['fields']['password'])) {
+				unset($result[$this->_config['fields']['password']]);
+			}
+			return $result;
+		}
+		return false;
+	}
+
+/**
  * Logout all providers
  *
  * @param array $user The user about to be logged out.
  * @return void
  */
-	public function logout($user) {
-		$this->_init();
+	public function logout(array $user) {
+		$this->_init($this->_registry->getController()->request);
 		$this->hybridAuth->logoutAllProviders();
 	}
 
