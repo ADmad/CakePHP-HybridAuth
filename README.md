@@ -12,8 +12,9 @@ Requirements
 Installation
 ------------
 
-Run: `composer require admad/cakephp-hybridauth` or add `admad/cakephp-hybridauth`
-to `require` in your application's `composer.json`
+Run: `composer require admad/cakephp-hybridauth:dev-cake3` or add
+`"admad/cakephp-hybridauth": "dev-cake3"` to the `require` section of your
+application's `composer.json`.
 
 Setup
 -----
