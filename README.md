@@ -12,9 +12,18 @@ Requirements
 Installation
 ------------
 
+__[Composer]__
+
+The recommended way to install the plugin is using composer.
 Run: `composer require admad/cakephp-hybridauth:dev-master` or add
 `"admad/cakephp-hybridauth": "dev-master"` to the `require` section of your
 application's `composer.json`.
+
+__[Manual]__
+
+Download the plugin and put in under `app/Plugin/HybridAuth`. Also download the
+[hybridauth](https://github.com/hybridauth/hybridauth) lib and put the `hybridauth`
+folder under `app/Vendor` directory.
 
 Setup
 -----
