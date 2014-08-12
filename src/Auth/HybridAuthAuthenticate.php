@@ -2,8 +2,8 @@
 namespace ADmad\HybridAuth\Auth;
 
 use Cake\Auth\FormAuthenticate;
-use Cake\Core\Configure;
 use Cake\Controller\ComponentRegistry;
+use Cake\Core\Configure;
 use Cake\Error\Exception;
 use Cake\Network\Request;
 use Cake\Network\Response;
@@ -127,7 +127,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 		if (empty($hybridConfig['base_url'])) {
 			$hybridConfig['base_url'] = Router::url(
 				array(
-					'plugin' => 'ADmad/HybridAuth',
+					'plugin' => 'ADmad\HybridAuth',
 					'controller' => 'HybridAuth',
 					'action' => 'endpoint'
 				),
