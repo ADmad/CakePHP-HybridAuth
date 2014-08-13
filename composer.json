@@ -19,5 +19,8 @@
     "psr-4": {
       "ADmad\\HybridAuth\\": "src"
     }
+  },
+  "extra": {
+    "installer-name": "ADmad/HybridAuth"
   }
 }
