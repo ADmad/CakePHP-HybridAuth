@@ -20,12 +20,12 @@ Setup
 -----
 
 Load the plugin by adding following to your app's boostrap:
-`CakePlugin::load('ADmad\HybridAuth', ['bootstrap' => true, 'routes' => true]);`
+`CakePlugin::load('ADmad/HybridAuth', ['bootstrap' => true, 'routes' => true]);`
 
 Configuration
 -------------
 
-Make a config file `src/Config/hybridauth.php`
+Make a config file `config/hybridauth.php`
 Eg.
 
 	<?php
@@ -57,7 +57,7 @@ required authenticator. You would have something like this in your `AppControlle
 	public $components = [
 		'Auth' => [
 			'authenticate' => [
-				'ADmad\HybridAuth.HybridAuth'
+				'ADmad/HybridAuth.HybridAuth'
 			]
 		]
 	];

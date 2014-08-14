@@ -127,7 +127,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 		if (empty($hybridConfig['base_url'])) {
 			$hybridConfig['base_url'] = Router::url(
 				array(
-					'plugin' => 'ADmad\HybridAuth',
+					'plugin' => 'ADmad/HybridAuth',
 					'controller' => 'HybridAuth',
 					'action' => 'endpoint'
 				),
