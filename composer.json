@@ -11,7 +11,7 @@
   "homepage": "http://github.com/ADmad/CakePHP-HybridAuth",
   "license": "MIT",
   "require": {
-    "composer/installers": "*",
+    "cakephp/plugin-installer": "*",
     "hybridauth/hybridauth": "dev-master"
   },
   "minimum-stability": "dev",
