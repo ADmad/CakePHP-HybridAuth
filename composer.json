@@ -12,7 +12,7 @@
   "license": "MIT",
   "require": {
     "cakephp/plugin-installer": "dev-master",
-    "hybridauth/hybridauth": "dev-master"
+    "hybridauth/hybridauth": "2.3.*"
   },
   "minimum-stability": "dev",
   "autoload": {
