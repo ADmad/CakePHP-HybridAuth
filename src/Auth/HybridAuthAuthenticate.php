@@ -4,7 +4,6 @@ namespace ADmad\HybridAuth\Auth;
 use Cake\Auth\FormAuthenticate;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
-use Cake\Error\Exception;
 use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\Routing\Router;
@@ -119,7 +118,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
  *
  * @param \Cake\Network\Request $request Request instance
  * @return void
- * @throws \Cake\Error\Exception
+ * @throws \RuntimeException
  */
 	protected function _init(Request $request) {
 		$request->session()->start();
@@ -139,7 +138,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 			$this->hybridAuth = new \Hybrid_Auth($hybridConfig);
 		} catch (\Exception $e) {
 			if ($e->getCode() < 5) {
-				throw new Exception($e->getMessage());
+				throw new \RuntimeException($e->getMessage());
 			} else {
 				$this->_registry->Auth->flash($e->getMessage());
 				$this->hybridAuth = new \Hybrid_Auth($hybridConfig);
