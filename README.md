@@ -8,6 +8,7 @@ Requirements
 ------------
 
 * CakePHP 2.4+
+* For CakePHP 3.0 compatibility please check the [cake3](https://github.com/ADmad/CakePHP-HybridAuth/tree/cake3) branch.
 
 Installation
 ------------
