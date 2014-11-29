@@ -1,6 +1,7 @@
 <?php
 namespace ADmad\HybridAuth\Auth;
 
+use Cake\ORM\TableRegistry;
 use Cake\Auth\FormAuthenticate;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
@@ -157,7 +158,13 @@ class HybridAuthAuthenticate extends FormAuthenticate {
  * @return array User record
  */
 	protected function _getUser($provider, $adapter) {
-		$providerProfile = $adapter->getUserProfile();
+		try {
+			$providerProfile = $adapter->getUserProfile();
+		} catch(\Exception $e) {
+			$adapter->logout();
+			throw $e;
+		}
+
 
 		$userModel = $this->_config['userModel'];
 		list(, $model) = pluginSplit($userModel);
