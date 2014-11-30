@@ -1,12 +1,12 @@
 <?php
 namespace ADmad\HybridAuth\Auth;
 
-use Cake\ORM\TableRegistry;
 use Cake\Auth\FormAuthenticate;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
 use Cake\Network\Request;
 use Cake\Network\Response;
+use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 
 /**
@@ -100,7 +100,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 			return false;
 		}
 
-		$params = [];
+		$params = ['hauth_return_to' => $this->_registry->Auth->redirectUrl()];
 		if ($provider === 'OpenID') {
 			$params['openid_identifier'] = $request->data[$fields['openid_identifier']];
 		}
@@ -164,7 +164,6 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 			$adapter->logout();
 			throw $e;
 		}
-
 
 		$userModel = $this->_config['userModel'];
 		list(, $model) = pluginSplit($userModel);
