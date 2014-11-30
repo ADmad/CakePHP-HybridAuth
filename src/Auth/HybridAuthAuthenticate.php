@@ -4,6 +4,7 @@ namespace ADmad\HybridAuth\Auth;
 use Cake\Auth\FormAuthenticate;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
+use Cake\Event\Event;
 use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
@@ -234,12 +235,22 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 /**
  * Logout all providers
  *
+ * @param \Cake\Event\Event $event Event.
  * @param array $user The user about to be logged out.
  * @return void
  */
-	public function logout(array $user) {
+	public function logout(Event $event, array $user) {
 		$this->_init($this->_registry->getController()->request);
 		$this->hybridAuth->logoutAllProviders();
+	}
+
+/**
+ * Returns a list of all events that this authenticate class will listen to.
+ *
+ * @return array List of events this class listens to.
+ */
+	public function implementedEvents() {
+		return ['Auth.logout' => 'logout'];
 	}
 
 }
