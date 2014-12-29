@@ -9,17 +9,17 @@
 use Cake\Core\Configure;
 
 if (file_exists(APP . 'Config' . DS . 'hybridauth.php')) {
-	Configure::load('hybridauth');
+    Configure::load('hybridauth');
 } else {
-	$config = array(
-		'providers' => array(
-			'OpenID' => array(
-				'enabled' => true
-			)
-		),
-		'debug_mode' => (bool)Configure::read('debug'),
-		'debug_file' => LOGS . 'hybridauth.log',
-	);
+    $config = array(
+    'providers' => array(
+    'OpenID' => array(
+                'enabled' => true
+    )
+    ),
+        'debug_mode' => (bool)Configure::read('debug'),
+        'debug_file' => LOGS . 'hybridauth.log',
+    );
 
-	Configure::write('HybridAuth', $config);
+    Configure::write('HybridAuth', $config);
 }
