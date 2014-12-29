@@ -1,0 +1,16 @@
+language: php
+
+sudo: false
+
+php:
+  - 5.4
+
+before_script:
+  - composer require --dev cakephp/cakephp-codesniffer:dev-master
+  - composer install --prefer-dist --dev
+
+script:
+  - ./vendor/bin/phpcs -p --extensions=php --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./config
+
+notifications:
+  email: false
