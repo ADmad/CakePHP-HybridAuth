@@ -20,7 +20,7 @@ Setup
 -----
 
 Load the plugin by adding following to your app's boostrap:
-`CakePlugin::load('ADmad/HybridAuth', ['bootstrap' => true, 'routes' => true]);`
+`Plugin::load('ADmad/HybridAuth', ['bootstrap' => true, 'routes' => true]);`
 
 Configuration
 -------------
@@ -39,7 +39,7 @@ Eg.
 		],
 		'debug_mode' => Configure::read('debug'),
 		'debug_file' => LOGS . 'hybridauth.log',
-	);
+	];
 
 For more information about the hybridauth configuration array check
 http://hybridauth.sourceforge.net/userguide/Configuration.html
@@ -51,16 +51,14 @@ fields `provider` and `provider_uid`. The fields are configurable through the
 Usage
 -----
 Check the CakePHP manual on how to configure and use the `AuthComponent` with
-required authenticator. You would have something like this in your `AppController`.
+required authenticator. You would have something like this in your `AppController`'s `initialize` method.
 
 	<?php
-	public $components = [
-		'Auth' => [
-			'authenticate' => [
-				'ADmad/HybridAuth.HybridAuth'
-			]
-		]
-	];
+	$this->loadComponent('Auth', [
+            'authenticate' => [
+                'ADmad/HybridAuth.HybridAuth'
+            ]
+        ]);
 
 Your controller's login action should be similar to this:
 

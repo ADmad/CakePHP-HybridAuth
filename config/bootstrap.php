@@ -8,7 +8,7 @@
 
 use Cake\Core\Configure;
 
-if (file_exists(APP . 'Config' . DS . 'hybridauth.php')) {
+if (file_exists(CONFIG . 'hybridauth.php')) {
     Configure::load('hybridauth');
 } else {
     $config = array(
