@@ -39,7 +39,7 @@ Eg.
 		],
 		'debug_mode' => Configure::read('debug'),
 		'debug_file' => LOGS . 'hybridauth.log',
-	);
+	];
 
 For more information about the hybridauth configuration array check
 http://hybridauth.sourceforge.net/userguide/Configuration.html
