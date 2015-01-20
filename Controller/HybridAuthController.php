@@ -3,8 +3,8 @@ App::uses('AppController', 'Controller');
 App::uses('CakeSession', 'Model/Datasource');
 
 if (!class_exists('Hybrid_Auth')) {
-	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Auth');
-	App::import('Vendor', 'HybridAuth.hybridauth/Hybrid/Endpoint');
+	App::import('Vendor', 'hybridauth/Hybrid/Auth');
+	App::import('Vendor', 'hybridauth/Hybrid/Endpoint');
 }
 
 /**
