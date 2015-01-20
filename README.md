@@ -30,7 +30,7 @@ folder under `app/Vendor` directory.
 Setup
 -----
 
-If you haven't already done so include composer's autoloader in your `bootrap.php`:
+If you haven't already done so include composer's autoloader in your `bootstrap.php`:
 
 	// Code below is as suggested on http://mark-story.com/posts/view/installing-cakephp-with-composer
 
