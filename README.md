@@ -30,8 +30,9 @@ folder under `app/Vendor` directory.
 Setup
 -----
 
-If you haven't already done so include composer's autoloader in your `bootrap.php`:
+If you haven't already done so include composer's autoloader in your `bootstrap.php`:
 
+```php
 	// Code below is as suggested on http://mark-story.com/posts/view/installing-cakephp-with-composer
 
 	// Load composer autoload.
@@ -41,6 +42,7 @@ If you haven't already done so include composer's autoloader in your `bootrap.ph
 	// See https://github.com/composer/composer/commit/c80cb76b9b5082ecc3e5b53b1050f76bb27b127b
 	spl_autoload_unregister(array('App', 'load'));
 	spl_autoload_register(array('App', 'load'), true, true);
+```
 
 Then load the plugin:
 `CakePlugin::load('HybridAuth', array('bootstrap' => true));`
@@ -48,9 +50,9 @@ Then load the plugin:
 Configuration
 -------------
 
-Make a config file `App/Config/hybridauth.php`
-Eg.
+Make a config file `App/Config/hybridauth.php`. Example:
 
+```php
 	<?php
 	$config['HybridAuth'] = array(
 		'providers' => array(
@@ -61,6 +63,7 @@ Eg.
 		'debug_mode' => (bool)Configure::read('debug'),
 		'debug_file' => LOGS . 'hybridauth.log',
 	);
+```
 
 For more information about the hybridauth configuration array check
 http://hybridauth.sourceforge.net/userguide/Configuration.html
@@ -74,6 +77,7 @@ Usage
 Check the CakePHP manual on how to configure and use the `AuthComponent` with
 required authenticator. You would have something like this in your `AppController`.
 
+```php
 	<?php
 	public $components = array(
 		'Auth' => array(
@@ -84,9 +88,11 @@ required authenticator. You would have something like this in your `AppControlle
 			)
 		)
 	);
+```
 
 Your controller's login action should be similar to this:
 
+```php
 	<?php
 	public function login() {
 		if ($this->request->is('post')) {
@@ -97,6 +103,7 @@ Your controller's login action should be similar to this:
 			}
 		}
 	}
+```
 
 An eg. element `View/Elements/login.ctp` showing how to setup the login page
 form is provided. The fields should use the same model name as the configured
@@ -110,6 +117,7 @@ user record in your app's users table. If no user is found and `registrationCall
 option is specified as shown in example above the specified method from the `User`
 model is called. The callback method can be similar to this:
 
+```php
 	<?php
 	public function hybridRegister($provider, stdClass $profile) {
 		$profile = (array)$profile;
@@ -125,6 +133,7 @@ model is called. The callback method can be similar to this:
 		$this->create();
 		return $this->save($data, false);
 	}
+```
 
 If no callback is specified the profile returned by identity provider itself is
 returned by the authenticator.
@@ -132,7 +141,7 @@ returned by the authenticator.
 Copyright
 ---------
 
-Copyright 2014 ADmad
+Copyright &copy; 2014 ADmad
 
 License
 -------
