@@ -119,7 +119,7 @@ model is called. The callback method can be similar to this:
 
 ```php
 	<?php
-	public function hybridRegister($provider, stdClass $profile) {
+	public function hybridRegister($provider, Hybrid_User_Profile $profile) {
 		$profile = (array)$profile;
 		$data = array(
 			'provider' => $provider,
