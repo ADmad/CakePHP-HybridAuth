@@ -103,9 +103,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 
 		$params = array('hauth_return_to' => $this->_Collection->Auth->redirectUrl());
 		if ($provider === 'OpenID') {
-			$params = array(
-				'openid_identifier' => $request->data[$model][$fields['openid_identifier']]
-			);
+			$params['openid_identifier'] = $request->data[$model][$fields['openid_identifier']];
 		}
 
 		$this->_init();
