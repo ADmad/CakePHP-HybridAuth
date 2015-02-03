@@ -36,11 +36,11 @@ class HybridAuthAuthenticate extends FormAuthenticate
     public function __construct(ComponentRegistry $registry, $config)
     {
         $this->config([
-        'fields' => [
-        'provider' => 'provider',
-        'provider_uid' => 'provider_uid',
-        'openid_identifier' => 'openid_identifier'
-        ]
+            'fields' => [
+                'provider' => 'provider',
+                'provider_uid' => 'provider_uid',
+                'openid_identifier' => 'openid_identifier'
+            ]
         ]);
 
         parent::__construct($registry, $config);
@@ -58,10 +58,8 @@ class HybridAuthAuthenticate extends FormAuthenticate
     protected function _checkFields(Request $request, array $fields)
     {
         $provider = $request->data($fields['provider']);
-        if (empty($provider) ||
-        ($provider === 'OpenID' &&
-        !$request->data($fields['openid_identifier'])
-        )
+        if (empty($provider) || 
+            ($provider === 'OpenID' && !$request->data($fields['openid_identifier']))
         ) {
             return false;
         }
@@ -133,11 +131,11 @@ class HybridAuthAuthenticate extends FormAuthenticate
         $hybridConfig = Configure::read('HybridAuth');
         if (empty($hybridConfig['base_url'])) {
             $hybridConfig['base_url'] = Router::url(
-                array(
-                'plugin' => 'ADmad/HybridAuth',
-                'controller' => 'HybridAuth',
-                'action' => 'endpoint'
-                ),
+                [
+                    'plugin' => 'ADmad/HybridAuth',
+                    'controller' => 'HybridAuth',
+                    'action' => 'endpoint'
+                ],
                 true
             );
         }
@@ -178,8 +176,8 @@ class HybridAuthAuthenticate extends FormAuthenticate
         $fields = $this->_config['fields'];
 
         $conditions = [
-        $model . '.' . $fields['provider'] => $provider,
-        $model . '.' . $fields['provider_uid'] => $providerProfile->identifier
+            $model . '.' . $fields['provider'] => $provider,
+            $model . '.' . $fields['provider_uid'] => $providerProfile->identifier
         ];
 
         $user = $this->_fetchUserFromDb($conditions);
@@ -189,11 +187,11 @@ class HybridAuthAuthenticate extends FormAuthenticate
 
         if (!empty($this->_config['registrationCallback'])) {
             $return = call_user_func_array(
-                array(
-                TableRegistry::get($userModel),
-                $this->_config['registrationCallback']
-                ),
-                array($provider, $providerProfile)
+                [
+                    TableRegistry::get($userModel),
+                    $this->_config['registrationCallback']
+                ],
+                [$provider, $providerProfile]
             );
             if ($return) {
                 $user = $this->_fetchUserFromDb($conditions);
