@@ -101,7 +101,7 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 			return false;
 		}
 
-		$params = array('hauth_return_to' => $this->_Collection->Auth->redirectUrl());
+		$params = array('hauth_return_to' => Router::url($this->_Collection->Auth->redirectUrl(), true));
 		if ($provider === 'OpenID') {
 			$params['openid_identifier'] = $request->data[$model][$fields['openid_identifier']];
 		}
