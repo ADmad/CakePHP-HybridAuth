@@ -58,7 +58,7 @@ class HybridAuthAuthenticate extends FormAuthenticate
     protected function _checkFields(Request $request, array $fields)
     {
         $provider = $request->data($fields['provider']);
-        if (empty($provider) || 
+        if (empty($provider) ||
             ($provider === 'OpenID' && !$request->data($fields['openid_identifier']))
         ) {
             return false;
