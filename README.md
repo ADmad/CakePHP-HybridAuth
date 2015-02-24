@@ -1,7 +1,6 @@
 CakePHP HybridAuth Plugin
 =========================
 
-[![Build Status](https://travis-ci.org/ADmad/CakePHP-HybridAuth.png?branch=cake3)](https://travis-ci.org/ADmad/CakePHP-HybridAuth)
 [![Total Downloads](https://poser.pugx.org/admad/cakephp-hybridauth/downloads.svg)](https://packagist.org/packages/admad/cakephp-hybridauth.png)
 [![License](https://poser.pugx.org/admad/cakephp-hybridauth/license.svg)](https://packagist.org/packages/admad/cakephp-hybridauth)
 
