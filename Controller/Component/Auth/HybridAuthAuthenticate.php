@@ -34,8 +34,9 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 				'fields' => array(
 					'provider' => 'provider',
 					'provider_uid' => 'provider_uid',
-					'openid_identifier' => 'openid_identifier'
-				)
+					'openid_identifier' => 'openid_identifier',
+				),
+				'hauth_return_to' => null
 			)
 		);
 
@@ -101,7 +102,19 @@ class HybridAuthAuthenticate extends FormAuthenticate {
 			return false;
 		}
 
-		$params = array('hauth_return_to' => Router::url($this->_Collection->Auth->redirectUrl(), true));
+		if ($this->settings['hauth_return_to']) {
+			$returnTo = Router::url($this->settings['hauth_return_to'], true);
+		} else {
+			$returnTo = Router::url(
+				array(
+					'plugin' => 'hybrid_auth',
+					'controller' => 'hybrid_auth',
+					'action' => 'authenticated'
+				),
+				true
+			);
+		}
+		$params = array('hauth_return_to' => $returnTo);
 		if ($provider === 'OpenID') {
 			$params['openid_identifier'] = $request->data[$model][$fields['openid_identifier']];
 		}
