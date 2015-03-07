@@ -75,6 +75,9 @@ The plugin also expects that your users table used for authentication contains
 fields `provider` and `provider_uid`. The fields are configurable through the
 `HybridAuthAuthenticate` authenticator.
 
+__Note:__ When specifying `loginRedirect` URL for AuthComponent be sure to add
+`'plugin' => false` (or appropiate plugin name) to the URL array.
+
 Usage
 -----
 Check the CakePHP manual on how to configure and use the `AuthComponent` with
