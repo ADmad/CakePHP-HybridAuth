@@ -14,7 +14,7 @@ class HybridAuthController extends AppController
 {
 
     /**
-     * Allow method "endpoint"
+     * Allow methods 'endpoint' and 'authenticated'.
      *
      * @param \Cake\Event\Event $event Before filter event.
      * @return void
@@ -22,7 +22,7 @@ class HybridAuthController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->allow('endpoint');
+        $this->Auth->allow(['endpoint', 'authenticated']);
     }
 
     /**
@@ -34,5 +34,23 @@ class HybridAuthController extends AppController
     {
         $this->request->session()->start();
         \Hybrid_Endpoint::process();
+    }
+
+    /**
+     * This action exists just to ensure AuthComponent fetches user info from
+     * hybridauth after successful login
+     *
+     * Hyridauth's `hauth_return_to` is set to this action.
+     *
+     * @return void
+     */
+    public function authenticated()
+    {
+        $user = $this->Auth->identify();
+        if ($user) {
+            $this->Auth->setUser($user);
+            return $this->redirect($this->Auth->redirectUrl());
+        }
+        return $this->redirect($this->Auth->loginAction);
     }
 }

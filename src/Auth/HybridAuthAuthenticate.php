@@ -40,7 +40,8 @@ class HybridAuthAuthenticate extends FormAuthenticate
                 'provider' => 'provider',
                 'provider_uid' => 'provider_uid',
                 'openid_identifier' => 'openid_identifier'
-            ]
+            ],
+            'hauth_return_to' => null
         ]);
 
         parent::__construct($registry, $config);
@@ -104,7 +105,19 @@ class HybridAuthAuthenticate extends FormAuthenticate
             return false;
         }
 
-        $params = ['hauth_return_to' => $this->_registry->Auth->redirectUrl()];
+        if ($this->_config['hauth_return_to']) {
+            $returnTo = Router::url($this->_config['hauth_return_to'], true);
+        } else {
+            $returnTo = Router::url(
+                [
+                    'plugin' => 'ADmad/HybridAuth',
+                    'controller' => 'HybridAuth',
+                    'action' => 'authenticated'
+                ],
+                true
+            );
+        }
+        $params = ['hauth_return_to' => $returnTo];
         if ($provider === 'OpenID') {
             $params['openid_identifier'] = $request->data[$fields['openid_identifier']];
         }
