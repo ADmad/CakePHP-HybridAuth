@@ -15,8 +15,8 @@ Requirements
 Installation
 ------------
 
-Run: `composer require admad/cakephp-hybridauth:dev-cake3` or add
-`"admad/cakephp-hybridauth": "dev-cake3"` to the `require` section of your
+Run: `composer require admad/cakephp-hybridauth:~3.0` or add
+`"admad/cakephp-hybridauth": "~3.0"` to the `require` section of your
 application's `composer.json`.
 
 Setup
@@ -80,7 +80,7 @@ Your controller's login action should be similar to this:
 		}
 	}
 
-An eg. element `Template/Elements/login.ctp` showing how to setup the login page
+An eg. element `Template/Element/login.ctp` showing how to setup the login page
 form is provided. Checkout the various
 [examples](http://hybridauth.sourceforge.net/userguide/Examples_and_Demos.html)
 in hybridauth documentation to see various ways to setup your login page.
@@ -97,7 +97,7 @@ returned by the authenticator.
 Copyright
 ---------
 
-Copyright 2014 ADmad
+Copyright 2015 ADmad
 
 License
 -------
