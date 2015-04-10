@@ -96,7 +96,10 @@ required authenticator. You would have something like this in your `AppControlle
 	<?php
 	$this->loadComponent('Auth', [
             'authenticate' => [
-                'ADmad/HybridAuth.HybridAuth'
+                'ADmad/HybridAuth.HybridAuth'=> [
+                    // (optional) name of method on users model used to create new records.
+					'registrationCallback' => 'registration' 
+                ]
             ]
         ]);
 ```        
@@ -124,12 +127,31 @@ in hybridauth documentation to see various ways to setup your login page.
 
 Once a user is authenticated through the provider the authenticator gets the user
 profile from the identity provider and using that tries to find the corresponding
-user record in your app's users table. If no user is found and `registrationCallback`
-option is specified the specified method from the `User` model is called. You
-can use the callback to save user record to database.
+user record in your app's users table.
 
-If no callback is specified the profile returned by identity provider itself is
-returned by the authenticator.
+If no user record is found and `registrationCallback` option is specified. The 
+specified method from the `User` model is called. You can use this callback to
+save user record to database.
+
+Here is an example:
+
+```PHP
+    class UsersTable extends Table
+    {
+        /**
+         * @param string               $provider Provider name.
+         * @param \Hybrid_User_Profile $profile  The generic profile object.
+         */
+        public function registration($provider, $profile)
+        {
+            // return True if a new user record was created.
+            return true;
+        }
+    }
+```
+
+When no callback is specified the `$this->Auth-user()` method returns the identity data from the authentication provider.
+If you want `$this->Auth->user()` to contain a user record from your database, then you must define a callback to create a new record.
 
 Copyright
 ---------
