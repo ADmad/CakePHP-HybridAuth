@@ -85,7 +85,7 @@ Here is a sample user table:
 ```
 
 __Note:__ When specifying `loginRedirect` URL for AuthComponent be sure to add
-`'plugin' => false` (or appropiate plugin name) to the URL array.
+`'plugin' => false` (or appropriate plugin name) to the URL array.
 
 Usage
 -----
@@ -93,15 +93,27 @@ Check the CakePHP manual on how to configure and use the `AuthComponent` with
 required authenticator. You would have something like this in your `AppController`'s `initialize` method.
 
 ```PHP
-     <?php
-     $this->loadComponent('Auth', [
-          'authenticate' => [
-               'ADmad/HybridAuth.HybridAuth'=> [
-                    // (optional) name of method on users model used to create new records.
-	            'registrationCallback' => 'registration' 
+    <?php
+    namespace App\Controller;
+    
+    use Cake\Controller\Controller;
+    
+    /**
+     * @property \Cake\Controller\Component\AuthComponent  $Auth
+     */
+    class AppController extends Controller
+    {
+    
+        public function initialize() {
+            $this->loadComponent('Auth', [
+                'authenticate' => [
+                    'ADmad/HybridAuth.HybridAuth'=> [
+                        // (optional) name of method on users model used to create new records.
+                        'registrationCallback' => 'registration' 
+                    ]
                 ]
-            ]
-        ]);
+            ]);
+        }
 ```        
 
 Your controller's login action should be similar to this:
@@ -129,22 +141,38 @@ Once a user is authenticated through the provider the authenticator gets the use
 profile from the identity provider and using that tries to find the corresponding
 user record in your app's users table.
 
-If no user record is found and `registrationCallback` option is specified. The 
-specified method from the `User` model is called. You can use this callback to
+If no user record is found and `registrationCallback` option is specified, then 
+the specified method from the `UsersTable` model is called. You can use this callback to
 save user record to database.
 
 Here is an example:
 
 ```PHP
+<?php
+    namespace App\Model\Table;
+    
+    use Cake\Log\Log;
+    use Cake\ORM\Table;
+    use Cake\Validation\Validator;
+    
     class UsersTable extends Table
     {
         /**
          * @param string               $provider Provider name.
          * @param \Hybrid_User_Profile $profile  The generic profile object.
+         *
+         * @return boolean
          */
-        public function registration($provider, $profile)
-        {
-            // return True if a new user record was created.
+        public function registration($provider, $profile) {
+            $user = $this->newEntity([
+                                         'name'         => $profile->displayName,
+                                         'provider'     => $provider,
+                                         'provider_uid' => $profile->identifier
+                                     ]);
+    
+            if(!$this->save($user)) {
+                Log::write(LOG_ERR, 'Failed to create new user record');
+            }
             return true;
         }
     }
