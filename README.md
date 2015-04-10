@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 ```
 
-__Note:__ When specifying `loginRedirect` URL for AuthComponent be sure to add
+> __Note:__ When specifying `loginRedirect` URL for AuthComponent be sure to add
 `'plugin' => false` (or appropriate plugin name) to the URL array.
 
 Usage
@@ -132,6 +132,9 @@ public function login() {
     }
 }
 ```	
+> __Note:__ When your action calls $this->Auth->identify() the method may not return. The authenticator
+ may need to redirect to another URL to complete the identify procedure. It's important not to
+ implement any important business logic that depends upon the identify() method returning.
 
 An eg. element `Template/Element/login.ctp` showing how to setup the login page
 form is provided. Checkout the various
