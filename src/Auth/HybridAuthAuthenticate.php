@@ -22,7 +22,7 @@ class HybridAuthAuthenticate extends FormAuthenticate
     /**
      * HybridAuth instance
      *
-     * @var HybridAuth
+     * @var \Hybrid_Auth
      */
     public $hybridAuth = null;
 
