@@ -15,6 +15,7 @@ use Cake\Routing\Router;
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
+ * 
  */
 class HybridAuthAuthenticate extends FormAuthenticate
 {

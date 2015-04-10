@@ -151,7 +151,8 @@ Here is an example:
 ```
 
 When no callback is specified the `$this->Auth-user()` method returns the identity data from the authentication provider.
-If you want `$this->Auth->user()` to contain a user record from your database, then you must define a callback to create a new record.
+If you want `$this->Auth->user()` to contain a user record from your database, then you must define a callback to create
+a new record.
 
 Copyright
 ---------
