@@ -19,7 +19,7 @@ __[Composer]__
 
 The recommended way to install the plugin is using composer.
 
-Run: `composer require admad/cakephp-hybridauth:dev-master` or add
+Run: `composer require admad/cakephp-hybridauth:~1.0` or add
 `"admad/cakephp-hybridauth": "~1.0"` to the `require` section of your
 application's `composer.json`.
 
