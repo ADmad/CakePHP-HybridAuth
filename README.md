@@ -93,12 +93,12 @@ Check the CakePHP manual on how to configure and use the `AuthComponent` with
 required authenticator. You would have something like this in your `AppController`'s `initialize` method.
 
 ```PHP
-	<?php
-	$this->loadComponent('Auth', [
-            'authenticate' => [
-                'ADmad/HybridAuth.HybridAuth'=> [
+     <?php
+     $this->loadComponent('Auth', [
+          'authenticate' => [
+               'ADmad/HybridAuth.HybridAuth'=> [
                     // (optional) name of method on users model used to create new records.
-					'registrationCallback' => 'registration' 
+	            'registrationCallback' => 'registration' 
                 ]
             ]
         ]);
