@@ -13,3 +13,4 @@ echo $this->Form->input(
 
 echo $this->Form->submit('Login');
 echo $this->Form->end();
+?>

@@ -15,8 +15,8 @@ Router::plugin('ADmad/HybridAuth', ['path' => '/hybrid_auth'], function ($routes
         '/endpoint',
         ['controller' => 'HybridAuth', 'action' => 'endpoint']
     );
-	$routes->connect(
-		'/authenticated',
-		['controller' => 'HybridAuth', 'action' => 'authenticated']
-	);
+    $routes->connect(
+        '/authenticated',
+        ['controller' => 'HybridAuth', 'action' => 'authenticated']
+    );
 });
