@@ -31,7 +31,6 @@ Configuration
 Make a config file `config/hybridauth.php`
 Eg.
 
-```php
 	<?php
 	use Cake\Core\Configure;
 
@@ -60,7 +59,6 @@ Usage
 Check the CakePHP manual on how to configure and use the `AuthComponent` with
 required authenticator. You would have something like this in your `AppController`'s `initialize` method.
 
-```php
 	<?php
 	$this->loadComponent('Auth', [
             'authenticate' => [
@@ -70,7 +68,6 @@ required authenticator. You would have something like this in your `AppControlle
 
 Your controller's login action should be similar to this:
 
-```php
 	<?php
 	public function login() {
 		if ($this->request->is('post')) {
@@ -82,7 +79,6 @@ Your controller's login action should be similar to this:
 			$this->Flash->error(__('Invalid username or password, try again'));
 		}
 	}
-```
 
 An eg. element `Template/Element/login.ctp` showing how to setup the login page
 form is provided. Checkout the various
