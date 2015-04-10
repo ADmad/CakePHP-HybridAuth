@@ -17,15 +17,15 @@ Installation
 This plugin can be installed using composer.
 
 ```
-    $ composer require admad/cakephp-hybridauth:~3.0
+$ composer require admad/cakephp-hybridauth:~3.0
 ```
 
 Or manually update your `composer.json`.
 
 ```JavaScript
-    "require": {
-        "admad/cakephp-hybridauth": "~3.0"
-    },
+"require": {
+    "admad/cakephp-hybridauth": "~3.0"
+},
 ```
 
 Setup
@@ -34,7 +34,7 @@ Setup
 Load the plugin by adding the following to your `App/config/bootstrap.php` file:
 
 ```PHP
-    Plugin::load('ADmad/HybridAuth', ['bootstrap' => true, 'routes' => true]);
+Plugin::load('ADmad/HybridAuth', ['bootstrap' => true, 'routes' => true]);
 ```
 
 Configuration
@@ -44,18 +44,18 @@ Make a config file `App/config/hybridauth.php`
 Eg.
 
 ```PHP
-	<?php
-	use Cake\Core\Configure;
+<?php
+use Cake\Core\Configure;
 
-	$config['HybridAuth'] = [
-		'providers' => [
-			'OpenID' => [
-				'enabled' => true
-			]
-		],
-		'debug_mode' => Configure::read('debug'),
-		'debug_file' => LOGS . 'hybridauth.log',
-	];
+$config['HybridAuth'] = [
+    'providers' => [
+        'OpenID' => [
+            'enabled' => true
+        ]
+    ],
+    'debug_mode' => Configure::read('debug'),
+    'debug_file' => LOGS . 'hybridauth.log',
+];
 ```
 
 For more information about the hybridauth configuration array check
@@ -71,17 +71,17 @@ the fields `provider` and `provider_uid`. The fields are configurable through th
 Here is a sample user table:
 
 ```MySQL
-    CREATE TABLE IF NOT EXISTS `users` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `email` varchar(200) NOT NULL,
-      `password` varchar(200) NOT NULL,
-      `first_name` varchar(200) NOT NULL,
-      `last_name` varchar(200) NOT NULL,
-      `provider` varchar(100) NOT NULL,
-      `provider_uid` varchar(255) NOT NULL,
-      `created_at` datetime NOT NULL,
-      PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+CREATE TABLE IF NOT EXISTS `users` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `email` varchar(200) NOT NULL,
+    `password` varchar(200) NOT NULL,
+    `first_name` varchar(200) NOT NULL,
+    `last_name` varchar(200) NOT NULL,
+    `provider` varchar(100) NOT NULL,
+    `provider_uid` varchar(255) NOT NULL,
+    `created_at` datetime NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 ```
 
 __Note:__ When specifying `loginRedirect` URL for AuthComponent be sure to add
@@ -93,43 +93,43 @@ Check the CakePHP manual on how to configure and use the `AuthComponent` with
 required authenticator. You would have something like this in your `AppController`'s `initialize` method.
 
 ```PHP
-    <?php
-    namespace App\Controller;
-    
-    use Cake\Controller\Controller;
-    
-    /**
-     * @property \Cake\Controller\Component\AuthComponent  $Auth
-     */
-    class AppController extends Controller
-    {
-    
-        public function initialize() {
-            $this->loadComponent('Auth', [
-                'authenticate' => [
-                    'ADmad/HybridAuth.HybridAuth'=> [
-                        // (optional) name of method on users model used to create new records.
-                        'registrationCallback' => 'registration' 
-                    ]
+<?php
+namespace App\Controller;
+
+use Cake\Controller\Controller;
+
+/**
+ * @property \Cake\Controller\Component\AuthComponent  $Auth
+ */
+class AppController extends Controller
+{
+
+    public function initialize() {
+        $this->loadComponent('Auth', [
+            'authenticate' => [
+                'ADmad/HybridAuth.HybridAuth'=> [
+                    // (optional) name of method on users model used to create new records.
+                    'registrationCallback' => 'registration' 
                 ]
-            ]);
-        }
+            ]
+        ]);
+    }
 ```        
 
 Your controller's login action should be similar to this:
 
 ```PHP
-	<?php
-	public function login() {
-		if ($this->request->is('post')) {
-			$user = $this->Auth->identify();
-			if ($user) {
-				$this->Auth->setUser($user);
-				return $this->redirect($this->Auth->redirectUrl());
-			}
-			$this->Flash->error(__('Invalid username or password, try again'));
-		}
-	}
+<?php
+public function login() {
+    if ($this->request->is('post')) {
+        $user = $this->Auth->identify();
+        if ($user) {
+            $this->Auth->setUser($user);
+            return $this->redirect($this->Auth->redirectUrl());
+        }
+        $this->Flash->error(__('Invalid username or password, try again'));
+    }
+}
 ```	
 
 An eg. element `Template/Element/login.ctp` showing how to setup the login page
@@ -149,33 +149,33 @@ Here is an example:
 
 ```PHP
 <?php
-    namespace App\Model\Table;
-    
-    use Cake\Log\Log;
-    use Cake\ORM\Table;
-    use Cake\Validation\Validator;
-    
-    class UsersTable extends Table
-    {
-        /**
-         * @param string               $provider Provider name.
-         * @param \Hybrid_User_Profile $profile  The generic profile object.
-         *
-         * @return boolean
-         */
-        public function registration($provider, $profile) {
-            $user = $this->newEntity([
-                                         'name'         => $profile->displayName,
-                                         'provider'     => $provider,
-                                         'provider_uid' => $profile->identifier
-                                     ]);
-    
-            if(!$this->save($user)) {
-                Log::write(LOG_ERR, 'Failed to create new user record');
-            }
-            return true;
+namespace App\Model\Table;
+
+use Cake\Log\Log;
+use Cake\ORM\Table;
+use Cake\Validation\Validator;
+
+class UsersTable extends Table
+{
+    /**
+     * @param string               $provider Provider name.
+     * @param \Hybrid_User_Profile $profile  The generic profile object.
+     *
+     * @return boolean
+     */
+    public function registration($provider, $profile) {
+        $user = $this->newEntity([
+                                     'name'         => $profile->displayName,
+                                     'provider'     => $provider,
+                                     'provider_uid' => $profile->identifier
+                                 ]);
+
+        if(!$this->save($user)) {
+            Log::write(LOG_ERR, 'Failed to create new user record');
         }
+        return true;
     }
+}
 ```
 
 When no callback is specified the `$this->Auth-user()` method returns the identity data from the authentication provider.
