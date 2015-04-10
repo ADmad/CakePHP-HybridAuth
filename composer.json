@@ -12,7 +12,7 @@
   "license": "MIT",
   "require": {
     "composer/installers": "*",
-    "hybridauth/hybridauth": "2.3.*"
+    "hybridauth/hybridauth": "2.4.*"
   },
   "extra": {
     "installer-name": "HybridAuth"

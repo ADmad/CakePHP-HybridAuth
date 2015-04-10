@@ -11,7 +11,6 @@ Requirements
 ------------
 
 * CakePHP 2.4+
-* For CakePHP 3.0 compatibility please check the [cake3](https://github.com/ADmad/CakePHP-HybridAuth/tree/cake3) branch.
 
 Installation
 ------------
@@ -21,7 +20,7 @@ __[Composer]__
 The recommended way to install the plugin is using composer.
 
 Run: `composer require admad/cakephp-hybridauth:dev-master` or add
-`"admad/cakephp-hybridauth": "dev-master"` to the `require` section of your
+`"admad/cakephp-hybridauth": "~1.0"` to the `require` section of your
 application's `composer.json`.
 
 __[Manual]__
@@ -147,7 +146,7 @@ returned by the authenticator.
 Copyright
 ---------
 
-Copyright &copy; 2014 ADmad
+Copyright &copy; 2015 ADmad
 
 License
 -------
