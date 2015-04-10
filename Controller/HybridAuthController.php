@@ -48,7 +48,7 @@ class HybridAuthController extends AppController {
  *
  * Hyridauth's `hauth_return_to` is set to this action.
  *
- * @return void
+ * @return \Cake\Network\Response
  */
 	public function authenticated() {
 		$user = $this->Auth->identify($this->request, $this->response);
