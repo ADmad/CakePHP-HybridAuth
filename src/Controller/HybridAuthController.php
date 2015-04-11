@@ -51,6 +51,6 @@ class HybridAuthController extends AppController
             $this->Auth->setUser($user);
             return $this->redirect($this->Auth->redirectUrl());
         }
-        return $this->redirect($this->Auth->loginAction);
+        return $this->redirect($this->Auth->config('loginAction'));
     }
 }
