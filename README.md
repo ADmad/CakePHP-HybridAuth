@@ -19,15 +19,6 @@ This plugin can be installed using composer.
 ```
 $ composer require admad/cakephp-hybridauth:~3.0
 ```
-
-Or manually update your `composer.json`.
-
-```JavaScript
-"require": {
-    "admad/cakephp-hybridauth": "~3.0"
-},
-```
-
 Setup
 -----
 
@@ -75,8 +66,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `email` varchar(200) NOT NULL,
     `password` varchar(200) NOT NULL,
-    `first_name` varchar(200) NOT NULL,
-    `last_name` varchar(200) NOT NULL,
+    `name` varchar(200) NOT NULL,
     `provider` varchar(100) NOT NULL,
     `provider_uid` varchar(255) NOT NULL,
     `created` datetime NOT NULL,
@@ -176,7 +166,9 @@ class UsersTable extends Table
 
         if(!$this->save($user)) {
             Log::write(LOG_ERR, 'Failed to create new user record');
+            return false;
         }
+        
         return true;
     }
 }
