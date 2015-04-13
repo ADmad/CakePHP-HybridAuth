@@ -1,7 +1,7 @@
 CakePHP HybridAuth Plugin
 =========================
 
-[![Total Downloads](https://poser.pugx.org/admad/cakephp-hybridauth/downloads.svg)](https://packagist.org/packages/admad/cakephp-hybridauth.png)
+[![Total Downloads](https://poser.pugx.org/admad/cakephp-hybridauth/downloads.svg)](https://packagist.org/packages/admad/cakephp-hybridauth)
 [![License](https://poser.pugx.org/admad/cakephp-hybridauth/license.svg)](https://packagist.org/packages/admad/cakephp-hybridauth)
 
 A CakePHP plugin which allows using the [HybridAuth](http://hybridauth.sourceforge.net/)
