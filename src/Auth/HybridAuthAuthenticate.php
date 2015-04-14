@@ -174,6 +174,7 @@ class HybridAuthAuthenticate extends FormAuthenticate
      * @param string $provider Provider name.
      * @param object $adapter Hybrid auth adapter instance.
      * @return array User record
+     * @throws \Exception
      */
     protected function _getUser($provider, $adapter)
     {
