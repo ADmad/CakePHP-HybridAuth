@@ -86,6 +86,7 @@ required authenticator. You would have something like this in your `AppControlle
 ```php
 $this->loadComponent('Auth', [
         'authenticate' => [
+            'Form',
             'ADmad/HybridAuth.HybridAuth'
         ]
     ]);
