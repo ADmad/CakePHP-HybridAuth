@@ -6,12 +6,12 @@
  * For full copyright and license information, please see the LICENSE.txt
  */
 
-$config['HybridAuth'] = array(
-    'providers' => array(
-        'OpenID' => array(
+$config['HybridAuth'] = [
+    'providers' => [
+        'OpenID' => [
             'enabled' => true
-        ),
-    ),
+        ],
+    ],
     'debug_mode' => (bool)Configure::read('debug'),
     'debug_file' => LOGS . 'hybridauth.log',
-);
+];
