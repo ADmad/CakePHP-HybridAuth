@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `provider` varchar(100) NOT NULL,
     `provider_uid` varchar(255) NOT NULL,
     `created` datetime DEFAULT NULL,
-    `modified` datetime DEFAULT NULL
+    `modified` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 ```
