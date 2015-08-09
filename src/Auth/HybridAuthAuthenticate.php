@@ -10,6 +10,7 @@ use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
+use Cake\Utility\Inflector;
 
 /**
  * HybridAuth Authenticate
@@ -19,6 +20,8 @@ use Cake\Routing\Router;
  */
 class HybridAuthAuthenticate extends BaseAuthenticate
 {
+
+    use EventManagerTrait;
 
     /**
      * HybridAuth instance.
@@ -77,7 +80,9 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         }
 
         $request->session()->start();
+
         $hybridConfig = Configure::read('HybridAuth');
+
         if (empty($hybridConfig['base_url'])) {
             $hybridConfig['base_url'] = Router::url(
                 [
@@ -256,14 +261,9 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             $user = $this->_newUser($adapter, $providerProfile);
         }
 
-        if ($profile) {
-            $profile = $this->_updateProfile($profile);
-        } else {
-            $profile = $this->_createProfile($user);
-        }
-
+        $profile = $this->_profileEntity($profile, $user);
         $result = TableRegistry::get($this->_config['profileModel'])->save($profile);
-        if ($result) {
+        if (!$result) {
             throw new \RuntimeException('Unable to save social profile');
         }
 
@@ -281,11 +281,11 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     protected function _query($identifier)
     {
         $config = $this->_config;
-        list(, $userAlias) = $config['userModel'];
-        $provider = $this->adapter()->providerId;
+        list(, $userAlias) = pluginSplit($config['userModel']);
+        $provider = $this->adapter()->id;
 
-        $table = TableRegistry::get($config['profileModel'])->find($config['finder']);
-        $query = $table->find();
+        $table = TableRegistry::get($config['profileModel']);
+        $query = $table->find('all');
 
         $query
             ->where([
@@ -309,7 +309,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $event = $this->dispatchEvent(
             'HybridAuth.newUser',
             [
-                'provider' => $adapter->providerId,
+                'provider' => $adapter->id,
                 'profile' => $providerProfile
             ]
         );
@@ -334,33 +334,41 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
-     * Create social profile record
+     * Get social profile entity
      *
+     * @param \Cake\ORM\Entity $profile
      * @param \Cake\ORM\Entity $user
      * @return \Cake\ORM\Entity
      */
-    protected function _createProfile($user)
+    protected function _profileEntity($profile, $user)
     {
-        $profile = TableRegistry::get($this->_config['profileModel'])->newEntity();
+        $ProfileTable = TableRegistry::get($this->_config['profileModel']);
 
-        $attributes['provider'] = $this->provider();
-        $attributes['user_id'] = $user->id;
-        $profile = $this->_updateProfile($profile);
+        if (!$profile) {
+            $profile = $ProfileTable->newEntity([
+                'provider' => $this->adapter()->id,
+                'user_id' => $user->id
+            ]);
+        }
 
-        return $profile;
-    }
+        foreach (get_object_vars($this->profile()) as $key => $value) {
+            switch ($key) {
+                case 'webSiteURL':
+                    $profile->set('website_url', $value);
+                    break;
 
-    /**
-     * Update social profile record
-     *
-     * @param \Cake\ORM\Entity $profile
-     * @return \Cake\ORM\Entity
-     */
-    protected function _updateProfile($profile)
-    {
-        $attributes = get_object_vars($this->profile());
-        foreach ($attributes as $k => $v) {
-            $profile->$k = $v;
+                case 'profileURL':
+                    $profile->set('profile_url', $value);
+                    break;
+
+                case 'photoURL':
+                    $profile->set('photo_url', $value);
+                    break;
+
+                default:
+                    $profile->set(Inflector::underscore($key), $value);
+                    break;
+            }
         }
 
         return $profile;

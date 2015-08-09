@@ -6,12 +6,16 @@
  * For full copyright and license information, please see the LICENSE.txt
  */
 
-$config['HybridAuth'] = [
-    'providers' => [
-        'OpenID' => [
-            'enabled' => true
+use Cake\Core\Configure;
+
+return [
+    'HybridAuth' => [
+        'providers' => [
+            'OpenID' => [
+                'enabled' => true
+            ],
         ],
-    ],
-    'debug_mode' => (bool)Configure::read('debug'),
-    'debug_file' => LOGS . 'hybridauth.log',
+        'debug_mode' => (bool)Configure::read('debug'),
+        'debug_file' => LOGS . 'hybridauth.log',
+    ]
 ];

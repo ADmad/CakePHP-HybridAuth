@@ -14,7 +14,7 @@ class SocialProfilesTable extends Table
 
     public function initialize(array $config)
     {
-        parent::initialize();
+        parent::initialize($config);
 
         $this->belongsTo('Users');
     }
