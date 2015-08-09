@@ -1,10 +1,11 @@
 <?php
 namespace ADmad\HybridAuth\Auth;
 
-use Cake\Auth\FormAuthenticate;
+use Cake\Auth\BaseAuthenticate;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\Event\EventManagerTrait;
 use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
@@ -16,15 +17,29 @@ use Cake\Routing\Router;
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  */
-class HybridAuthAuthenticate extends FormAuthenticate
+class HybridAuthAuthenticate extends BaseAuthenticate
 {
 
     /**
-     * HybridAuth instance
+     * HybridAuth instance.
      *
      * @var \Hybrid_Auth
      */
-    public $hybridAuth = null;
+    protected $_hybridAuth;
+
+    /**
+     * HybridAuth adapter.
+     *
+     * @var \Hybrid_Provider_Model
+     */
+    protected $_adapter;
+
+    /**
+     * HybridAuth user profile.
+     *
+     * @var \Hybrid_User_Profile
+     */
+    protected $_providerProfile;
 
     /**
      * Constructor
@@ -38,9 +53,10 @@ class HybridAuthAuthenticate extends FormAuthenticate
         $this->config([
             'fields' => [
                 'provider' => 'provider',
-                'provider_uid' => 'provider_uid',
-                'openid_identifier' => 'openid_identifier'
+                'openid_identifier' => 'openid_identifier',
+                'email' => 'email'
             ],
+            'profileModel' => 'SocialProfiles',
             'hauth_return_to' => null
         ]);
 
@@ -48,39 +64,88 @@ class HybridAuthAuthenticate extends FormAuthenticate
     }
 
     /**
-     * Checks the fields to ensure they are supplied.
+     * Get HybridAuth instance
      *
-     * @param \Cake\Network\Request $request The request that contains login
-     *   information.
-     * @param array $fields The fields to be checked.
-     * @return string|bool Provider name if it exists, false if required fields have
-     *   not been supplied.
+     * @param \Cake\Network\Request $request Request instance.
+     * @return void
+     * @throws \RuntimeException Incase case of unknown error.
      */
-    protected function _checkFields(Request $request, array $fields)
+    public function hybridAuth(Request $request)
     {
-        $provider = $request->data($fields['provider']);
-        if (empty($provider) ||
-            ($provider === 'OpenID' && !$request->data($fields['openid_identifier']))
-        ) {
-            return false;
+        if ($this->_hybridAuth) {
+            return $this->_hybridAuth;
         }
 
-        return $provider;
+        $request->session()->start();
+        $hybridConfig = Configure::read('HybridAuth');
+        if (empty($hybridConfig['base_url'])) {
+            $hybridConfig['base_url'] = Router::url(
+                [
+                    'plugin' => 'ADmad/HybridAuth',
+                    'controller' => 'HybridAuth',
+                    'action' => 'endpoint'
+                ],
+                true
+            );
+        }
+
+        try {
+            $this->_hybridAuth = new \Hybrid_Auth($hybridConfig);
+        } catch (\Exception $e) {
+            if ($e->getCode() < 5) {
+                throw new \RuntimeException($e->getMessage());
+            } else {
+                $this->_registry->Auth->flash($e->getMessage());
+                $this->_hybridAuth = new \Hybrid_Auth($hybridConfig);
+            }
+        }
+
+        return $this->_hybridAuth;
     }
 
     /**
-     * Check if a provider already connected return user record if available
+     * Get / set hybridauth adapter instance.
      *
-     * @param Request $request Request instance.
+     * @param \Hybrid_Provider_Model $adapter
+     * @return \Hybrid_Provider_Model|void
+     */
+    public function adapter($adapter = null)
+    {
+        if ($adapter === null) {
+            return $this->_adapter;
+        }
+
+        $this->_adapter = $adapter;
+    }
+
+    /**
+     * Get / set hybridauth user profile instance.
+     *
+     * @param \Hybrid_User_Profile $adapter
+     * @return \Hybrid_User_Profile|void
+     */
+    public function profile($profile = null)
+    {
+        if ($profile === null) {
+            return $this->_providerProfile;
+        }
+
+        $this->_providerProfile = $profile;
+    }
+
+    /**
+     * Check if a provider is already connected, return user record if available.
+     *
+     * @param \Cake\Network\Request $request Request instance.
      * @return array|bool User array on success, false on failure.
      */
     public function getUser(Request $request)
     {
-        $this->_init($request);
-        $idps = $this->hybridAuth->getConnectedProviders();
+        $hybridAuth = $this->hybridAuth($request);
+        $idps = $hybridAuth->getConnectedProviders();
         foreach ($idps as $provider) {
-            $adapter = $this->hybridAuth->getAdapter($provider);
-            return $this->_getUser($provider, $adapter);
+            $adapter = $hybridAuth->getAdapter($provider);
+            return $this->_getUser($adapter);
         }
         return false;
     }
@@ -88,8 +153,8 @@ class HybridAuthAuthenticate extends FormAuthenticate
     /**
      * Authenticate a user based on the request information.
      *
-     * @param Request $request Request to get authentication information from.
-     * @param Response $response A response object that can have headers added.
+     * @param \Cake\Network\Request $request Request to get authentication information from.
+     * @param \Cake\Network\Response $response A response object that can have headers added.
      * @return array|bool User array on success, false on failure.
      */
     public function authenticate(Request $request, Response $response)
@@ -122,8 +187,8 @@ class HybridAuthAuthenticate extends FormAuthenticate
             $params['openid_identifier'] = $request->data[$fields['openid_identifier']];
         }
 
-        $this->_init($request);
-        $adapter = $this->hybridAuth->authenticate($provider, $params);
+        $hybridAuth = $this->hybridAuth($request);
+        $adapter = $hybridAuth->authenticate($provider, $params);
 
         if ($adapter) {
             return $this->_getUser($provider, $adapter);
@@ -132,37 +197,24 @@ class HybridAuthAuthenticate extends FormAuthenticate
     }
 
     /**
-     * Initialize hybrid auth
+     * Checks the fields to ensure they are supplied.
      *
-     * @param \Cake\Network\Request $request Request instance.
-     * @return void
-     * @throws \RuntimeException Incase case of unknown error.
+     * @param \Cake\Network\Request $request The request that contains login
+     *   information.
+     * @param array $fields The fields to be checked.
+     * @return string|bool Provider name if it exists, false if required fields have
+     *   not been supplied.
      */
-    protected function _init(Request $request)
+    protected function _checkFields(Request $request, array $fields)
     {
-        $request->session()->start();
-        $hybridConfig = Configure::read('HybridAuth');
-        if (empty($hybridConfig['base_url'])) {
-            $hybridConfig['base_url'] = Router::url(
-                [
-                    'plugin' => 'ADmad/HybridAuth',
-                    'controller' => 'HybridAuth',
-                    'action' => 'endpoint'
-                ],
-                true
-            );
+        $provider = $request->data($fields['provider']);
+        if (empty($provider) ||
+            ($provider === 'OpenID' && !$request->data($fields['openid_identifier']))
+        ) {
+            return false;
         }
 
-        try {
-            $this->hybridAuth = new \Hybrid_Auth($hybridConfig);
-        } catch (\Exception $e) {
-            if ($e->getCode() < 5) {
-                throw new \RuntimeException($e->getMessage());
-            } else {
-                $this->_registry->Auth->flash($e->getMessage());
-                $this->hybridAuth = new \Hybrid_Auth($hybridConfig);
-            }
-        }
+        return $provider;
     }
 
     /**
@@ -171,84 +223,147 @@ class HybridAuthAuthenticate extends FormAuthenticate
      * `registrationCallback` is set the specified callback function of User model
      * is called.
      *
-     * @param string $provider Provider name.
-     * @param object $adapter Hybrid auth adapter instance.
+     * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
      * @return array User record
      */
-    protected function _getUser($provider, $adapter)
+    protected function _getUser($adapter)
     {
         try {
             $providerProfile = $adapter->getUserProfile();
+            $this->adapter($adapter);
+            $this->profile($providerProfile);
         } catch (\Exception $e) {
             $adapter->logout();
             throw $e;
         }
 
-        $userModel = $this->_config['userModel'];
-        list(, $model) = pluginSplit($userModel);
-        $fields = $this->_config['fields'];
+        $config = $this->_config;
 
-        $conditions = [
-            $model . '.' . $fields['provider'] => $provider,
-            $model . '.' . $fields['provider_uid'] => $providerProfile->identifier
-        ];
+        $user = null;
+        $profile = $this->_query($providerProfile->identifier)->first();
 
-        $user = $this->_fetchUserFromDb($conditions);
-        if ($user) {
-            return $user;
+        if ($profile) {
+            $user = $profile->user;
+            $profile->unsetProperty('user');
+        } elseif ($providerProfile->email) {
+            $user = TableRegistry::get($this->_config['userModel'])
+                ->find($config['finder'])
+                ->where([$config['fields']['email'] => $providerProfile->email])
+                ->first();
         }
 
-        if (!empty($this->_config['registrationCallback'])) {
-            $return = call_user_func_array(
-                [
-                    TableRegistry::get($userModel),
-                    $this->_config['registrationCallback']
-                ],
-                [$provider, $providerProfile]
-            );
-            if ($return) {
-                $user = $this->_fetchUserFromDb($conditions);
-                if ($user) {
-                    return $user;
-                }
-            }
+        if (!$user) {
+            $user = $this->_newUser($adapter, $providerProfile);
         }
 
-        return (array)$providerProfile;
+        if ($profile) {
+            $profile = $this->_updateProfile($profile);
+        } else {
+            $profile = $this->_createProfile($user);
+        }
+
+        $result = TableRegistry::get($this->_config['profileModel'])->save($profile);
+        if ($result) {
+            throw new \RuntimeException('Unable to save social profile');
+        }
+
+        $user->set('social_profile', $profile);
+        $user->unsetProperty($this->_config['fields']['password']);
+        return $user->toArray();
     }
 
     /**
-     * Fetch user from database matching required conditions
+     * Get query to fetch social profile record.
      *
-     * @param array $conditions Query conditions.
-     * @return array|bool User array on success, false on failure.
+     * @param string $identifier Provider's identifier.
+     * @return \Cake\ORM\Query
      */
-    protected function _fetchUserFromDb(array $conditions)
+    protected function _query($identifier)
     {
-        $scope = $this->_config['scope'];
-        if ($scope) {
-            $conditions = array_merge($conditions, $scope);
+        $config = $this->_config;
+        list(, $userAlias) = $config['userModel'];
+        $provider = $this->adapter()->providerId;
+
+        $table = TableRegistry::get($config['profileModel'])->find($config['finder']);
+        $query = $table->find();
+
+        $query
+            ->where([
+                $table->aliasField('provider') => $provider,
+                $table->aliasField('identifier') => $identifier
+            ])
+            ->contain([$userAlias]);
+
+        return $query;
+    }
+
+    /**
+     * Get new user record
+     *
+     * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
+     * @param \Hybrid_User_Profile $providerProfile
+     * @return \Cake\ORM\Entity
+     */
+    protected function _newUser($adapter, $providerProfile)
+    {
+        $event = $this->dispatchEvent(
+            'HybridAuth.newUser',
+            [
+                'provider' => $adapter->providerId,
+                'profile' => $providerProfile
+            ]
+        );
+
+        if (!empty($event->result)) {
+            return $event->result;
         }
 
-        $table = TableRegistry::get($this->_config['userModel'])->find('all');
+        $config = $this->_config;
+        $UsersTable = TableRegistry::get($config['userModel']);
 
-        $contain = $this->_config['contain'];
-        if ($contain) {
-            $table = $table->contain($contain);
+        $user = $UsersTable->newEntity();
+        $user->set($config['fields']['email'], $providerProfile->email);
+        $user->set($config['fields']['username'], $providerProfile->email);
+
+        $user = $UsersTable->save($user);
+        if (!$user) {
+            throw new \RuntimeException('Unable to create new user');
         }
 
-        $result = $table
-        ->where($conditions)
-        ->hydrate(false)
-        ->first();
+        return $user;
+    }
 
-        if ($result) {
-            if (isset($this->_config['fields']['password'])) {
-                unset($result[$this->_config['fields']['password']]);
-            }
-            return $result;
+    /**
+     * Create social profile record
+     *
+     * @param \Cake\ORM\Entity $user
+     * @return \Cake\ORM\Entity
+     */
+    protected function _createProfile($user)
+    {
+        $profile = TableRegistry::get($this->_config['profileModel'])->newEntity();
+
+        $attributes['provider'] = $this->provider();
+        $attributes['user_id'] = $user->id;
+        $profile = $this->_updateProfile($profile);
+
+        return $profile;
+    }
+
+    /**
+     * Update social profile record
+     *
+     * @param \Cake\ORM\Entity $profile
+     * @return \Cake\ORM\Entity
+     */
+    protected function _updateProfile($profile)
+    {
+        $attributes = get_object_vars($this->profile());
+        foreach ($attributes as $k => $v) {
+            $profile->$k = $v;
         }
-        return false;
+
+        return $profile;
     }
 
     /**
@@ -260,8 +375,8 @@ class HybridAuthAuthenticate extends FormAuthenticate
      */
     public function logout(Event $event, array $user)
     {
-        $this->_init($this->_registry->getController()->request);
-        $this->hybridAuth->logoutAllProviders();
+        $this->hybridAuth($this->_registry->getController()->request)
+            ->logoutAllProviders();
     }
 
     /**
