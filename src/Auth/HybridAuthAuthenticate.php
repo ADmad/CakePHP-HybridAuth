@@ -56,7 +56,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
                 'openid_identifier' => 'openid_identifier',
                 'email' => 'email'
             ],
-            'profileModel' => 'SocialProfiles',
+            'profileModel' => 'ADmad/HybridAuth.SocialProfiles',
             'hauth_return_to' => null
         ]);
 
@@ -242,7 +242,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $user = null;
         $profile = $this->_query($providerProfile->identifier)->first();
 
-        if ($profile) {
+        if ($profile && !empty($profile->user)) {
             $user = $profile->user;
             $profile->unsetProperty('user');
         } elseif ($providerProfile->email) {
