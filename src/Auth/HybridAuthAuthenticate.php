@@ -70,7 +70,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      * Get HybridAuth instance
      *
      * @param \Cake\Network\Request $request Request instance.
-     * @return void
+     * @return \Hyrid_Auth
      * @throws \RuntimeException Incase case of unknown error.
      */
     public function hybridAuth(Request $request)
@@ -111,7 +111,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     /**
      * Get / set hybridauth adapter instance.
      *
-     * @param \Hybrid_Provider_Model $adapter
+     * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance
      * @return \Hybrid_Provider_Model|void
      */
     public function adapter($adapter = null)
@@ -126,7 +126,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     /**
      * Get / set hybridauth user profile instance.
      *
-     * @param \Hybrid_User_Profile $adapter
+     * @param \Hybrid_User_Profile $profile Hybrid auth user profile instance
      * @return \Hybrid_User_Profile|void
      */
     public function profile($profile = null)
@@ -251,7 +251,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             $user = $profile->user;
             $profile->unsetProperty('user');
         } elseif ($providerProfile->email) {
-            $user = TableRegistry::get($this->_config['userModel'])
+            $user = TableRegistry::get($config['userModel'])
                 ->find($config['finder'])
                 ->where([$config['fields']['email'] => $providerProfile->email])
                 ->first();
@@ -262,13 +262,13 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         }
 
         $profile = $this->_profileEntity($profile, $user);
-        $result = TableRegistry::get($this->_config['profileModel'])->save($profile);
+        $result = TableRegistry::get($config['profileModel'])->save($profile);
         if (!$result) {
             throw new \RuntimeException('Unable to save social profile');
         }
 
         $user->set('social_profile', $profile);
-        $user->unsetProperty($this->_config['fields']['password']);
+        $user->unsetProperty($config['fields']['password']);
         return $user->toArray();
     }
 
@@ -301,7 +301,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      * Get new user record
      *
      * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
-     * @param \Hybrid_User_Profile $providerProfile
+     * @param \Hybrid_User_Profile $providerProfile Hybrid auth user profile instance
      * @return \Cake\ORM\Entity
      */
     protected function _newUser($adapter, $providerProfile)
@@ -336,8 +336,8 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     /**
      * Get social profile entity
      *
-     * @param \Cake\ORM\Entity $profile
-     * @param \Cake\ORM\Entity $user
+     * @param \Cake\ORM\Entity $profile Social profile entity
+     * @param \Cake\ORM\Entity $user User entity
      * @return \Cake\ORM\Entity
      */
     protected function _profileEntity($profile, $user)

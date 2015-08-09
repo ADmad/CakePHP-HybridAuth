@@ -12,6 +12,12 @@ use Cake\ORM\Table;
 class SocialProfilesTable extends Table
 {
 
+    /**
+     * Initialize table.
+     *
+     * @param array $config Configuration
+     * @return void
+     */
     public function initialize(array $config)
     {
         parent::initialize($config);
