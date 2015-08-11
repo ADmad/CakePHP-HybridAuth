@@ -196,7 +196,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $adapter = $hybridAuth->authenticate($provider, $params);
 
         if ($adapter) {
-            return $this->_getUser($provider, $adapter);
+            return $this->_getUser($adapter);
         }
         return false;
     }
