@@ -22,6 +22,8 @@ class SocialProfilesTable extends Table
     {
         parent::initialize($config);
 
+        $this->addBehavior('Timestamp');
+
         $this->belongsTo('Users');
     }
 }
