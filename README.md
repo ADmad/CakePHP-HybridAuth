@@ -18,13 +18,19 @@ Installation
 Run:
 
 ```
-composer require admad/cakephp-hybridauth:~4.0.x-dev
+composer require --prefer-dist admad/cakephp-hybridauth:dev-master
 ```
 
 Setup
 -----
 
-Load the plugin by adding following to your app's boostrap:
+Load the plugin by running following command in terminal:
+
+```
+bin/cake plugin load ADmad/HybridAuth
+```
+
+or by manually adding following line to your app's `config/bootstrap.php`:
 
 ```php
 Plugin::load('ADmad/HybridAuth', ['bootstrap' => true, 'routes' => true]);
@@ -70,8 +76,14 @@ Database
 --------
 
 The plugin expects that you have a users table with at least `email` field
-and a `social_profiles` table, for which you can find a migration file under
-`vendor/admad/cakephp-hybridauth/config/Migrations`.
+and a `social_profiles` table. You can run
+
+```
+bin/cake migrations migrate -p ADmad/HybridAuth
+```
+
+to generate the `social_profiles` tabel using a migration file provided with
+the plugin.
 
 Usage
 -----
