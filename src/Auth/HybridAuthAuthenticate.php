@@ -12,6 +12,7 @@ use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Utility\Inflector;
+use Hybrid_Auth;
 
 /**
  * HybridAuth Authenticate
@@ -23,13 +24,6 @@ class HybridAuthAuthenticate extends BaseAuthenticate
 {
 
     use EventManagerTrait;
-
-    /**
-     * HybridAuth instance.
-     *
-     * @var \Hybrid_Auth
-     */
-    protected $_hybridAuth;
 
     /**
      * HybridAuth adapter.
@@ -44,6 +38,13 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      * @var \Hybrid_User_Profile
      */
     protected $_providerProfile;
+
+    /**
+     * Whether hybrid auth intialization is done.
+     *
+     * @var bool
+     */
+    protected $_initDone = false;
 
     /**
      * Constructor
@@ -68,16 +69,16 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
-     * Get HybridAuth instance
+     * Initialize HybridAuth
      *
      * @param \Cake\Network\Request $request Request instance.
-     * @return \Hyrid_Auth
+     * @return void
      * @throws \RuntimeException Incase case of unknown error.
      */
-    public function hybridAuth(Request $request)
+    protected function _init(Request $request)
     {
-        if ($this->_hybridAuth) {
-            return $this->_hybridAuth;
+        if ($this->_initDone) {
+            return;
         }
 
         $request->session()->start();
@@ -96,17 +97,15 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         }
 
         try {
-            $this->_hybridAuth = new \Hybrid_Auth($hybridConfig);
+            Hybrid_Auth::initialize($hybridConfig);
         } catch (\Exception $e) {
             if ($e->getCode() < 5) {
                 throw new \RuntimeException($e->getMessage());
             } else {
                 $this->_registry->Auth->flash($e->getMessage());
-                $this->_hybridAuth = new \Hybrid_Auth($hybridConfig);
+                Hybrid_Auth::initialize($hybridConfig);
             }
         }
-
-        return $this->_hybridAuth;
     }
 
     /**
@@ -147,10 +146,10 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      */
     public function getUser(Request $request)
     {
-        $hybridAuth = $this->hybridAuth($request);
-        $idps = $hybridAuth->getConnectedProviders();
-        foreach ($idps as $provider) {
-            $adapter = $hybridAuth->getAdapter($provider);
+        $this->_init($request);
+        $providers = Hybrid_Auth::getConnectedProviders();
+        foreach ($providers as $provider) {
+            $adapter = Hybrid_Auth::getAdapter($provider);
             return $this->_getUser($adapter);
         }
         return false;
@@ -192,8 +191,8 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             $params['openid_identifier'] = $request->data[$fields['openid_identifier']];
         }
 
-        $hybridAuth = $this->hybridAuth($request);
-        $adapter = $hybridAuth->authenticate($provider, $params);
+        $this->_init($request);
+        $adapter = Hybrid_Auth::authenticate($provider, $params);
 
         if ($adapter) {
             return $this->_getUser($adapter);
@@ -361,8 +360,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      */
     public function logout(Event $event, array $user)
     {
-        $this->hybridAuth($this->_registry->getController()->request)
-            ->logoutAllProviders();
+        Hybrid_Auth::logoutAllProviders();
     }
 
     /**
