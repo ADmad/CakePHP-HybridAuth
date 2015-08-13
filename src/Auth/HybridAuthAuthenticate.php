@@ -176,17 +176,16 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             return false;
         }
 
-        if ($this->_config['hauth_return_to']) {
+        $returnTo = Router::url(
+            [
+                'plugin' => 'ADmad/HybridAuth',
+                'controller' => 'HybridAuth',
+                'action' => 'authenticated'
+            ],
+            true
+        );
+        if (!empty($this->_config['hauth_return_to'])) {
             $returnTo = Router::url($this->_config['hauth_return_to'], true);
-        } else {
-            $returnTo = Router::url(
-                [
-                    'plugin' => 'ADmad/HybridAuth',
-                    'controller' => 'HybridAuth',
-                    'action' => 'authenticated'
-                ],
-                true
-            );
         }
         $params = ['hauth_return_to' => $returnTo];
         if ($provider === 'OpenID') {
