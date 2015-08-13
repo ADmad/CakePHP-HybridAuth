@@ -4,13 +4,16 @@ sudo: false
 
 php:
   - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
 
 before_script:
   - composer require --dev cakephp/cakephp-codesniffer:dev-master
   - composer install --prefer-dist --dev
 
 script:
-  - ./vendor/bin/phpcs -p --extensions=php --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./config
+  - ./vendor/bin/phpcs -p --extensions=php --standard=vendor/cakephp/cakephp-codesniffer/CakePHP --ignore=config/Migrations/* ./src ./config
 
 notifications:
   email: false
