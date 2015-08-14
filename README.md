@@ -108,7 +108,7 @@ Your controller's login action should be similar to this:
 
 ```php
 public function login() {
-    if ($this->request->is('post')) {
+    if ($this->request->is('post') || $this->request->query('provider')) {
         $user = $this->Auth->identify();
         if ($user) {
             $this->Auth->setUser($user);
@@ -124,8 +124,15 @@ The authenticator may need to redirect to the provider's site to complete the
 identification procedure. It's important not to implement any important business
 logic that depends upon the `identify()` method returning.
 
-An eg. element `Template/Element/login.ctp` showing how to setup the login page
-form is provided.
+On your login page you can create links to initiate authentication using required
+providers. Specify the provider name using variable named `provider` in query string.
+
+```php
+echo $this->Html->link(
+    'Login with Google',
+    ['controller' => 'Users', 'action' => 'login', '?' => ['provivder' => 'Google']]
+);
+```
 
 Once a user is authenticated through the provider the authenticator gets the user
 profile from the identity provider and using that tries to find the corresponding
