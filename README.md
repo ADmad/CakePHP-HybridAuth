@@ -130,7 +130,7 @@ providers. Specify the provider name using variable named `provider` in query st
 ```php
 echo $this->Html->link(
     'Login with Google',
-    ['controller' => 'Users', 'action' => 'login', '?' => ['provivder' => 'Google']]
+    ['controller' => 'Users', 'action' => 'login', '?' => ['provider' => 'Google']]
 );
 ```
 
