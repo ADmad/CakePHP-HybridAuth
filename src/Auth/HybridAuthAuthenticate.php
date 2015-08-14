@@ -360,6 +360,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      */
     public function logout(Event $event, array $user)
     {
+        $this->_init($event->subject()->request);
         Hybrid_Auth::logoutAllProviders();
     }
 
