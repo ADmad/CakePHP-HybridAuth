@@ -147,11 +147,13 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     public function getUser(Request $request)
     {
         $this->_init($request);
+
         $providers = Hybrid_Auth::getConnectedProviders();
         foreach ($providers as $provider) {
             $adapter = Hybrid_Auth::getAdapter($provider);
             return $this->_getUser($adapter);
         }
+
         return false;
     }
 
@@ -164,13 +166,11 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      */
     public function authenticate(Request $request, Response $response)
     {
-        $fields = $this->_config['fields'];
-
-        if (!$request->data($fields['provider'])) {
-            return $this->getUser($request);
+        if ($user = $this->getUser($request)) {
+            return $user;
         }
 
-        $provider = $this->_checkFields($request, $fields);
+        $provider = $this->_checkProvider($request->query);
         if (!$provider) {
             return false;
         }
@@ -188,10 +188,9 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         }
         $params = ['hauth_return_to' => $returnTo];
         if ($provider === 'OpenID') {
-            $params['openid_identifier'] = $request->data[$fields['openid_identifier']];
+            $params['openid_identifier'] = $request->query($this->_config['fields']['openid_identifier']);
         }
 
-        $this->_init($request);
         $adapter = Hybrid_Auth::authenticate($provider, $params);
 
         if ($adapter) {
@@ -201,20 +200,23 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
-     * Checks the fields to ensure they are supplied.
+     * Checks whether provider is supplied.
      *
-     * @param \Cake\Network\Request $request The request that contains login
-     *   information.
-     * @param array $fields The fields to be checked.
+     * @param $data Data array to check.
      * @return string|bool Provider name if it exists, false if required fields have
      *   not been supplied.
      */
-    protected function _checkFields(Request $request, array $fields)
+    protected function _checkProvider($data)
     {
-        $provider = $request->data($fields['provider']);
-        if (empty($provider) ||
-            ($provider === 'OpenID' && !$request->data($fields['openid_identifier']))
-        ) {
+        $fields = $this->_config['fields'];
+
+        if (empty($data[$fields['provider']])) {
+            return false;
+        }
+
+        $provider = $data[$fields['provider']];
+
+        if ($provider === 'OpenID' && empty($data[$fields['openid_identifier']])) {
             return false;
         }
 
