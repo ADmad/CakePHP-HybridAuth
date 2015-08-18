@@ -18,7 +18,7 @@ Installation
 Run:
 
 ```
-composer require --prefer-dist admad/cakephp-hybridauth:dev-master
+composer require --prefer-dist admad/cakephp-hybridauth:4.0.x-dev
 ```
 
 Setup
