@@ -5,7 +5,9 @@
     "keywords": [
         "cakephp",
         "hybridauth",
+        "social",
         "social signon",
+        "social authentication",
         "multi provider"
     ],
     "homepage": "http://github.com/ADmad/CakePHP-HybridAuth",
