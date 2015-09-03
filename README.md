@@ -27,7 +27,7 @@ Setup
 Load the plugin by running following command in terminal:
 
 ```
-bin/cake plugin load ADmad/HybridAuth
+bin/cake plugin load ADmad/HybridAuth -b -r
 ```
 
 or by manually adding following line to your app's `config/bootstrap.php`:
