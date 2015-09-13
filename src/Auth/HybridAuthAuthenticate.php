@@ -224,10 +224,12 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
-     * Get user record for hybrid auth adapter and try to get associated user record
-     * from your application database. If app user record is not found and
-     * `registrationCallback` is set the specified callback function of User model
-     * is called.
+     * Get user record for HybridAuth adapter and try to get associated user record
+     * from your application's database.
+     *
+     * If app user record is not found a 'HybridAuth.newUser' event is dispatched
+     * with profile info from HyridAuth. The event listener should create associated
+     * user record and return user entity as event result.
      *
      * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
      * @return array User record
