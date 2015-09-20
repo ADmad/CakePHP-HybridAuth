@@ -13,10 +13,9 @@
     "homepage": "http://github.com/ADmad/CakePHP-HybridAuth",
     "license": "MIT",
     "require": {
-        "cakephp/cakephp": "3.1.x-dev",
-        "hybridauth/hybridauth": "2.4.*"
+        "cakephp/cakephp": "~3.1",
+        "hybridauth/hybridauth": "~2.5"
     },
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "ADmad\\HybridAuth\\": "src"
