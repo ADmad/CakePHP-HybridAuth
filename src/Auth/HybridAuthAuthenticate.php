@@ -202,7 +202,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     /**
      * Checks whether provider is supplied.
      *
-     * @param $data Data array to check.
+     * @param array $data Data array to check.
      * @return string|bool Provider name if it exists, false if required fields have
      *   not been supplied.
      */
