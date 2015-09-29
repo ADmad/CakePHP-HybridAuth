@@ -136,7 +136,7 @@ echo $this->Html->link(
 
 Once a user is authenticated through the provider the authenticator gets the user
 profile from the identity provider and using that tries to find the corresponding
-user record in your app's users table. If no user is found emits a `HybriAuth.newUser`
+user record in your app's users table. If no user is found emits a `HybridAuth.newUser`
 event. You must setup a listener for this event which save new user record to
 your users table and return an entity for the new user. Here's how you can setup
 a method of your `UsersTable` as callback for the event.
