@@ -6,7 +6,7 @@ use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
-use Cake\Event\EventManagerTrait;
+use Cake\Event\EventDispatcherTrait;
 use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
@@ -23,7 +23,7 @@ use Hybrid_Auth;
 class HybridAuthAuthenticate extends BaseAuthenticate
 {
 
-    use EventManagerTrait;
+    use EventDispatcherTrait;
 
     /**
      * HybridAuth adapter.
