@@ -168,3 +168,7 @@ Copyright
 ---------
 
 Copyright 2015 ADmad
+
+License
+---------
+[See LICENSE](LICENSE)
