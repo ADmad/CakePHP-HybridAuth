@@ -153,7 +153,7 @@ public function createUser(Event $event) {
     // Entity representing record in social_profiles table
     $profile = $event->data()['profile'];
 
-    $user = $this->newEntity(array('email' => $profile->email));
+    $user = $this->newEntity(['email' => $profile->email]);
     $user = $this->save($user);
 
     if (!$user) {
