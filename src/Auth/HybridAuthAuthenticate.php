@@ -180,7 +180,8 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             [
                 'plugin' => 'ADmad/HybridAuth',
                 'controller' => 'HybridAuth',
-                'action' => 'authenticated'
+                'action' => 'authenticated',
+                'prefix' => false
             ],
             true
         );
