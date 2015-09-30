@@ -233,6 +233,8 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      *
      * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
      * @return array User record
+     * @throws \Exception Thrown when a profile cannot be retrieved
+     * @throws \RuntimeException Thrown when the user has not created a listener, or the entity cannot be persisted
      */
     protected function _getUser($adapter)
     {
