@@ -61,6 +61,14 @@ return [
                     'secret' => '<secret-key>'
                 ],
                 'scope' => 'email, user_about_me, user_birthday, user_hometown'
+            ],
+            'Twitter' => [
+                'enabled' => true,
+                'keys' => [
+                    'key' => '<twitter-key>',
+                    'secret' => '<twitter-secret>'
+                ],
+                'includeEmail' => true // Only if your app is whitelisted by Twitter Support
             ]
         ],
         'debug_mode' => Configure::read('debug'),
@@ -163,6 +171,10 @@ public function createUser(Event $event) {
     return $user;
 }
 ```
+
+Twitter & email addresses
+-------------------------
+If you are trying to achieve a 'Sign in using Twitter' functionality, and you require the users *email address*, you need to specifically get your application [white-listed by Twitter Support using this form](https://support.twitter.com/forms/platform) and selecting 'I need access to special permissions'. Then you can use the `'includeEmail' => true` configuration option.
 
 Copyright
 ---------
