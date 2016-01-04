@@ -4,7 +4,7 @@ CakePHP HybridAuth Plugin
 [![Total Downloads](https://img.shields.io/packagist/dt/ADmad/CakePHP-HybridAuth.svg?style=flat-square)](https://packagist.org/packages/admad/cakephp-hybridauth)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-A CakePHP plugin which allows using the [HybridAuth](http://hybridauth.sourceforge.net/)
+A CakePHP plugin which allows using the [HybridAuth](http://hybridauth.github.io/hybridauth/)
 social sign on library.
 
 Requirements
@@ -51,7 +51,7 @@ $config['HybridAuth'] = [
 ```
 
 For more information about the hybridauth configuration array check
-http://hybridauth.sourceforge.net/userguide/Configuration.html
+http://hybridauth.github.io/hybridauth/userguide/Configuration.html
 
 __Note:__ When specifying `loginRedirect` URL for AuthComponent be sure to add
 `'plugin' => false` (or appropiate plugin name) to the URL array.
@@ -85,11 +85,11 @@ required authenticator. You would have something like this in your `AppControlle
 
 ```php
 $this->loadComponent('Auth', [
-        'authenticate' => [
-            'Form',
-            'ADmad/HybridAuth.HybridAuth'
-        ]
-    ]);
+    'authenticate' => [
+        'Form',
+        'ADmad/HybridAuth.HybridAuth'
+    ]
+]);
 ```
 
 Your controller's login action should be similar to this:
@@ -114,7 +114,7 @@ logic that depends upon the identify() method returning.
 
 An eg. element `Template/Element/login.ctp` showing how to setup the login page
 form is provided. Checkout the various
-[examples](http://hybridauth.sourceforge.net/userguide/Examples_and_Demos.html)
+[examples](http://hybridauth.github.io/hybridauth/userguide/Examples_and_Demos.html)
 in hybridauth documentation to see various ways to setup your login page.
 
 Once a user is authenticated through the provider the authenticator gets the user
