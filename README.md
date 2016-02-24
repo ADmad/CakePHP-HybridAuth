@@ -179,8 +179,8 @@ If you are trying to achieve a 'Sign in using Twitter' functionality, and you re
 Copyright
 ---------
 
-Copyright 2015 ADmad
+Copyright 2016 ADmad
 
 License
 ---------
-[See LICENSE](LICENSE)
+[See LICENSE](LICENSE.txt)
