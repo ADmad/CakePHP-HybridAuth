@@ -129,4 +129,4 @@ returned by the authenticator.
 Copyright
 ---------
 
-Copyright 2015 ADmad
+Copyright 2016 ADmad
