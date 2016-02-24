@@ -10,7 +10,7 @@ namespace ADmad\HybridAuth\Config;
 
 use Cake\Routing\Router;
 
-Router::plugin('ADmad/HybridAuth', ['path' => '/hybrid_auth'], function ($routes) {
+Router::plugin('ADmad/HybridAuth', ['path' => '/hybrid-auth'], function ($routes) {
     $routes->connect(
         '/endpoint',
         ['controller' => 'HybridAuth', 'action' => 'endpoint']
