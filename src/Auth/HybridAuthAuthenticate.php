@@ -62,6 +62,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
                 'email' => 'email'
             ],
             'profileModel' => 'ADmad/HybridAuth.SocialProfiles',
+            'profileModelFkField' => 'user_id',
             'hauth_return_to' => null
         ]);
 
@@ -285,7 +286,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             $user = $event->result;
         }
 
-        $profile->user_id = $user->id;
+        $profile->{$config['profileModelFkField']} = $user->{$UsersTable->primaryKey()};
         $profile = TableRegistry::get($config['profileModel'])->save($profile);
         if (!$profile) {
             throw new \RuntimeException('Unable to save social profile.');

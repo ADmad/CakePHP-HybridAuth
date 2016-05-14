@@ -104,7 +104,17 @@ required authentication handler. You would have something like this in your
 $this->loadComponent('Auth', [
     'authenticate' => [
         'Form',
-        'ADmad/HybridAuth.HybridAuth'
+        'ADmad/HybridAuth.HybridAuth' => [
+            // All keys shown below are defaults
+            'fields' => [
+                'provider' => 'provider',
+                'openid_identifier' => 'openid_identifier',
+                'email' => 'email'
+            ],
+            'profileModel' => 'ADmad/HybridAuth.SocialProfiles',
+            'profileModelFkField' => 'user_id',
+            'hauth_return_to' => null
+        ]
     ]
 ]);
 ```
