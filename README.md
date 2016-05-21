@@ -169,7 +169,7 @@ public function initialize(array $config)
 {
     $this->hasMany('ADmad/HybridAuth.SocialProfiles');
 
-    EventManager::instance()->on('HybridAuth.newUser', [$this, 'createUser']);
+    \Cake\Event\EventManager::instance()->on('HybridAuth.newUser', [$this, 'createUser']);
 }
 
 public function createUser(Event $event) {
