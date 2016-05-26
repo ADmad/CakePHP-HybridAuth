@@ -50,14 +50,14 @@ return [
             'Google' => [
                 'enabled' => true,
                 'keys' => [
-                    'id' => '<facebook-application-id>',
+                    'id' => '<google-client-id>',
                     'secret' => '<secret-key>'
                 ]
             ],
             'Facebook' => [
                 'enabled' => true,
                 'keys' => [
-                    'id' => '<google-client-id>',
+                    'id' => '<facebook-application-id>',
                     'secret' => '<secret-key>'
                 ],
                 'scope' => 'email, user_about_me, user_birthday, user_hometown'
