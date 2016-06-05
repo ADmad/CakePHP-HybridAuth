@@ -172,7 +172,7 @@ public function initialize(array $config)
     \Cake\Event\EventManager::instance()->on('HybridAuth.newUser', [$this, 'createUser']);
 }
 
-public function createUser(Event $event) {
+public function createUser(\Cake\Event\Event $event) {
     // Entity representing record in social_profiles table
     $profile = $event->data()['profile'];
 
