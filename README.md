@@ -142,7 +142,7 @@ public function login() {
 }
 ```
 
-__Note:__ When your action calls $this->Auth->identify() the method may not return.
+__Note:__ When your action calls `$this->Auth->identify()` the method may not return.
 The authenticator may need to redirect to the provider's site to complete the
 identification procedure. It's important not to implement any important business
 logic that depends upon the `identify()` method returning.
