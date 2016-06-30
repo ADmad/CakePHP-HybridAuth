@@ -140,15 +140,6 @@ class CreateSocialProfiles extends AbstractMigration
                     'user_id',
                 ]
             )
-            ->addForeignKey(
-                'user_id',
-                'users',
-                'id',
-                [
-                    'update' => 'RESTRICT',
-                    'delete' => 'RESTRICT'
-                ]
-            )
             ->create();
     }
 }
