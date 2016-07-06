@@ -47,6 +47,20 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     protected $_initDone = false;
 
     /**
+     * User model.
+     *
+     * @var \Cake\Datasource\RepositoryInterface
+     */
+    protected $_userModel;
+
+    /**
+     * Social profile model
+     *
+     * @var \Cake\Datasource\RepositoryInterface
+     */
+    protected $_profileModel;
+
+    /**
      * Constructor
      *
      * @param \Cake\Controller\ComponentRegistry $registry The Component registry
@@ -70,7 +84,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
-     * Initialize HybridAuth
+     * Initialize HybridAuth and this authenticator.
      *
      * @param \Cake\Network\Request $request Request instance.
      * @return void
@@ -81,6 +95,9 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         if ($this->_initDone) {
             return;
         }
+
+        $this->_userModel = TableRegistry::get($this->_config['userModel']);
+        $this->_profileModel = TableRegistry::get($this->_config['profileModel']);
 
         $request->session()->start();
 
@@ -236,8 +253,8 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      *
      * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
      * @return array User record
-     * @throws \Exception Thrown when a profile cannot be retrieved
-     * @throws \RuntimeException Thrown when the user has not created a listener, or the entity cannot be persisted
+     * @throws \Exception Thrown when a profile cannot be retrieved.
+     * @throws \RuntimeException Thrown when profile entity cannot be persisted.
      */
     protected function _getUser($adapter)
     {
@@ -259,11 +276,9 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             $user = $profile->user;
             $profile->unsetProperty('user');
         } elseif ($providerProfile->email) {
-            $UsersTable = TableRegistry::get($config['userModel']);
-            $user = $UsersTable
-                ->find($config['finder'])
+            $user = $this->_userModel->find($config['finder'])
                 ->where([
-                    $UsersTable->aliasField($config['fields']['email']) => $providerProfile->email
+                    $this->_userModel->aliasField($config['fields']['email']) => $providerProfile->email
                 ])
                 ->first();
         }
@@ -271,23 +286,11 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $profile = $this->_profileEntity($profile ?: null);
 
         if (!$user) {
-            $event = $this->dispatchEvent(
-                'HybridAuth.newUser',
-                ['profile' => $profile]
-            );
-
-            if (empty($event->result) || !($event->result instanceof EntityInterface)) {
-                throw new \RuntimeException('
-                    You must attach a listener for "HybridAuth.newUser" event
-                    which saves new user record and returns an user entity.
-                ');
-            }
-
-            $user = $event->result;
+            $user = $this->_newUser($profile);
         }
 
-        $profile->{$config['profileModelFkField']} = $user->{$UsersTable->primaryKey()};
-        $profile = TableRegistry::get($config['profileModel'])->save($profile);
+        $profile->{$config['profileModelFkField']} = $user->{$this->_userModel->primaryKey()};
+        $profile = $this->_profileModel->save($profile);
         if (!$profile) {
             throw new \RuntimeException('Unable to save social profile.');
         }
@@ -298,6 +301,33 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
+     * Get new user entity.
+     *
+     * It dispatches a `HybridAuth.newUser` event. A listener must return
+     * an entity for new user record.
+     *
+     * @param \Cake\ORM\Entity $profile Social profile entity.
+     * @return \Cake\ORM\Entity User entity.
+     * @throws \RuntimeException Thrown when the user entity is not returned by event listener.
+     */
+    protected function _newUser($profile)
+    {
+        $event = $this->dispatchEvent(
+            'HybridAuth.newUser',
+            ['profile' => $profile]
+        );
+
+        if (empty($event->result) || !($event->result instanceof EntityInterface)) {
+            throw new \RuntimeException('
+                You must attach a listener for "HybridAuth.newUser" event
+                which saves new user record and returns an user entity.
+            ');
+        }
+
+        return $event->result;
+    }
+
+    /**
      * Get query to fetch social profile record.
      *
      * @param string $identifier Provider's identifier.
@@ -305,21 +335,15 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      */
     protected function _query($identifier)
     {
-        $config = $this->_config;
-        list(, $userAlias) = pluginSplit($config['userModel']);
+        list(, $userAlias) = pluginSplit($this->_config['userModel']);
         $provider = $this->adapter()->id;
 
-        $table = TableRegistry::get($config['profileModel']);
-        $query = $table->find('all');
-
-        $query
+        return $this->_profileModel->find()
             ->where([
-                $table->aliasField('provider') => $provider,
-                $table->aliasField('identifier') => $identifier
+                $this->_profileModel->aliasField('provider') => $provider,
+                $this->_profileModel->aliasField('identifier') => $identifier
             ])
             ->contain([$userAlias]);
-
-        return $query;
     }
 
     /**
@@ -331,8 +355,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     protected function _profileEntity($profile = null)
     {
         if (!$profile) {
-            $ProfileTable = TableRegistry::get($this->_config['profileModel']);
-            $profile = $ProfileTable->newEntity([
+            $profile = $this->_profileModel->newEntity([
                 'provider' => $this->adapter()->id,
             ]);
         }
