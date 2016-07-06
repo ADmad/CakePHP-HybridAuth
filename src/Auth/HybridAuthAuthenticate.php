@@ -254,12 +254,12 @@ class HybridAuthAuthenticate extends BaseAuthenticate
 
         $user = null;
         $profile = $this->_query($providerProfile->identifier)->first();
-
+        $UsersTable = TableRegistry::get($config['userModel']);
+        
         if ($profile && !empty($profile->user)) {
             $user = $profile->user;
             $profile->unsetProperty('user');
         } elseif ($providerProfile->email) {
-            $UsersTable = TableRegistry::get($config['userModel']);
             $user = $UsersTable
                 ->find($config['finder'])
                 ->where([
