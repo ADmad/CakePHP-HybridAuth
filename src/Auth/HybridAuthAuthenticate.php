@@ -253,8 +253,8 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      *
      * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
      * @return array User record
-     * @throws \Exception Thrown when a profile cannot be retrieved
-     * @throws \RuntimeException Thrown when the user has not created a listener, or the entity cannot be persisted
+     * @throws \Exception Thrown when a profile cannot be retrieved.
+     * @throws \RuntimeException Thrown when profile entity cannot be persisted.
      */
     protected function _getUser($adapter)
     {
@@ -286,19 +286,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $profile = $this->_profileEntity($profile ?: null);
 
         if (!$user) {
-            $event = $this->dispatchEvent(
-                'HybridAuth.newUser',
-                ['profile' => $profile]
-            );
-
-            if (empty($event->result) || !($event->result instanceof EntityInterface)) {
-                throw new \RuntimeException('
-                    You must attach a listener for "HybridAuth.newUser" event
-                    which saves new user record and returns an user entity.
-                ');
-            }
-
-            $user = $event->result;
+            $user = $this->_newUser($profile);
         }
 
         $profile->{$config['profileModelFkField']} = $user->{$this->_userModel->primaryKey()};
@@ -310,6 +298,33 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $user->set('social_profile', $profile);
         $user->unsetProperty($config['fields']['password']);
         return $user->toArray();
+    }
+
+    /**
+     * Get new user entity.
+     *
+     * It dispatches a `HybridAuth.newUser` event. A listener must return
+     * an entity for new user record.
+     *
+     * @param \Cake\ORM\Entity $profile Social profile entity.
+     * @return \Cake\ORM\Entity User entity.
+     * @throws \RuntimeException Thrown when the user entity is not returned by event listener.
+     */
+    protected function _newUser($profile)
+    {
+        $event = $this->dispatchEvent(
+            'HybridAuth.newUser',
+            ['profile' => $profile]
+        );
+
+        if (empty($event->result) || !($event->result instanceof EntityInterface)) {
+            throw new \RuntimeException('
+                You must attach a listener for "HybridAuth.newUser" event
+                which saves new user record and returns an user entity.
+            ');
+        }
+
+        return $event->result;
     }
 
     /**
