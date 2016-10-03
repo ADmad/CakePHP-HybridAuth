@@ -170,6 +170,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $providers = Hybrid_Auth::getConnectedProviders();
         foreach ($providers as $provider) {
             $adapter = Hybrid_Auth::getAdapter($provider);
+
             return $this->_getUser($adapter);
         }
 
@@ -216,6 +217,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         if ($adapter) {
             return $this->_getUser($adapter);
         }
+
         return false;
     }
 
