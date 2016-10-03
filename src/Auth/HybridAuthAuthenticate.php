@@ -254,7 +254,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
      * @param \Hybrid_Provider_Model $adapter Hybrid auth adapter instance.
      * @return array User record
      * @throws \Exception Thrown when a profile cannot be retrieved.
-     * @throws \RuntimeException Thrown when profile entity cannot be persisted.
+     * @throws \RuntimeException If profile entity cannot be persisted.
      */
     protected function _getUser($adapter)
     {
@@ -268,13 +268,29 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         }
 
         $config = $this->_config;
+        $userModel = $this->_userModel;
 
         $user = null;
         $profile = $this->_query($providerProfile->identifier)->first();
 
-        if ($profile && !empty($profile->user)) {
-            $user = $profile->user;
-            $profile->unsetProperty('user');
+        if ($profile) {
+            $userId = $profile->get($config['profileModelFkField']);
+            $user = $this->_userModel->find($config['finder'])
+                ->where([
+                    $userModel->aliasField($userModel->primaryKey()) => $userId
+                ])
+                ->first();
+
+            // User record exists but finder conditions did not match,
+            // so just update social profile record and return false.
+            if (!$user) {
+                $profile = $this->_profileEntity($profile);
+                if (!$this->_profileModel->save($profile)) {
+                    throw new \RuntimeException('Unable to save social profile.');
+                }
+
+                return false;
+            }
         } elseif ($providerProfile->email) {
             $user = $this->_userModel->find($config['finder'])
                 ->where([
@@ -283,13 +299,12 @@ class HybridAuthAuthenticate extends BaseAuthenticate
                 ->first();
         }
 
-        $profile = $this->_profileEntity($profile ?: null);
-
+        $profile = $this->_profileEntity($profile);
         if (!$user) {
             $user = $this->_newUser($profile);
         }
 
-        $profile->{$config['profileModelFkField']} = $user->{$this->_userModel->primaryKey()};
+        $profile->{$config['profileModelFkField']} = $user->{$userModel->primaryKey()};
         $profile = $this->_profileModel->save($profile);
         if (!$profile) {
             throw new \RuntimeException('Unable to save social profile.');
@@ -297,6 +312,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
 
         $user->set('social_profile', $profile);
         $user->unsetProperty($config['fields']['password']);
+
         return $user->toArray();
     }
 
@@ -342,8 +358,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             ->where([
                 $this->_profileModel->aliasField('provider') => $provider,
                 $this->_profileModel->aliasField('identifier') => $identifier
-            ])
-            ->contain([$userAlias]);
+            ]);
     }
 
     /**
