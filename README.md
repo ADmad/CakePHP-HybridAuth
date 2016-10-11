@@ -111,8 +111,11 @@ $this->loadComponent('Auth', [
                 'openid_identifier' => 'openid_identifier',
                 'email' => 'email'
             ],
+
             'profileModel' => 'ADmad/HybridAuth.SocialProfiles',
             'profileModelFkField' => 'user_id',
+
+            'userModel' => 'Users',
 
             // The URL Hybridauth lib should redirect to after authentication.
             // If no value is specified you are redirect to this plugin's
