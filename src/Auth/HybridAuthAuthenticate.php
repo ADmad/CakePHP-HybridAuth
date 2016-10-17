@@ -26,6 +26,12 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     use EventDispatcherTrait;
 
     /**
+     * The query string key used for remembering the referrered page when getting
+     * redirected to login.
+     */
+    const QUERY_STRING_REDIRECT = 'redirect';
+
+    /**
      * HybridAuth adapter.
      *
      * @var \Hybrid_Provider_Model
@@ -104,16 +110,24 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         $hybridConfig = Configure::read('HybridAuth');
 
         if (empty($hybridConfig['base_url'])) {
-            $hybridConfig['base_url'] = Router::url(
-                [
-                    'plugin' => 'ADmad/HybridAuth',
-                    'controller' => 'HybridAuth',
-                    'action' => 'endpoint',
-                    'prefix' => false
-                ],
-                true
-            );
+            $hybridConfig['base_url'] = [
+                'plugin' => 'ADmad/HybridAuth',
+                'controller' => 'HybridAuth',
+                'action' => 'endpoint',
+                'prefix' => false
+            ];
         }
+
+        if ($request->query(static::QUERY_STRING_REDIRECT)) {
+            if (is_array($hybridConfig['base_url'])) {
+                $hybridConfig['base_url']['?'][static::QUERY_STRING_REDIRECT] = $request->query(static::QUERY_STRING_REDIRECT);
+            }  else {
+                $char = strpos($hybridConfig['base_url'], '?') === false ? '?' : '&';
+                $hybridConfig['base_url'] .= $char . static::QUERY_STRING_REDIRECT . '=' . urlencode($request->query(static::QUERY_STRING_REDIRECT));
+            }
+        }
+
+        $hybridConfig['base_url'] = Router::url($hybridConfig['base_url'], true);
 
         try {
             Hybrid_Auth::initialize($hybridConfig);
@@ -195,18 +209,27 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             return false;
         }
 
-        $returnTo = Router::url(
-            [
-                'plugin' => 'ADmad/HybridAuth',
-                'controller' => 'HybridAuth',
-                'action' => 'authenticated',
-                'prefix' => false
-            ],
-            true
-        );
-        if (!empty($this->_config['hauth_return_to'])) {
-            $returnTo = Router::url($this->_config['hauth_return_to'], true);
+        $returnTo = [
+            'plugin' => 'ADmad/HybridAuth',
+            'controller' => 'HybridAuth',
+            'action' => 'authenticated',
+            'prefix' => false
+        ];
+        if ($this->config('hauth_return_to')) {
+            $returnTo = $this->config('hauth_return_to');
         }
+
+        if ($request->query(static::QUERY_STRING_REDIRECT)) {
+            if (is_array($returnTo)) {
+                $returnTo['?'][static::QUERY_STRING_REDIRECT] = $request->query(static::QUERY_STRING_REDIRECT);
+            } else {
+                $char = strpos($returnTo, '?') === false ? '?' : '&';
+                $returnTo .= $char . static::QUERY_STRING_REDIRECT . '=' . urlencode($request->query(static::QUERY_STRING_REDIRECT));
+            }
+        }
+
+        $returnTo = Router::url($returnTo, true);
+
         $params = ['hauth_return_to' => $returnTo];
         if ($provider === 'OpenID') {
             $params['openid_identifier'] = $request->query($this->_config['fields']['openid_identifier']);
