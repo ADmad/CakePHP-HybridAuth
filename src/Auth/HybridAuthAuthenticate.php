@@ -121,7 +121,7 @@ class HybridAuthAuthenticate extends BaseAuthenticate
         if ($request->query(static::QUERY_STRING_REDIRECT)) {
             if (is_array($hybridConfig['base_url'])) {
                 $hybridConfig['base_url']['?'][static::QUERY_STRING_REDIRECT] = $request->query(static::QUERY_STRING_REDIRECT);
-            }  else {
+            } else {
                 $char = strpos($hybridConfig['base_url'], '?') === false ? '?' : '&';
                 $hybridConfig['base_url'] .= $char . static::QUERY_STRING_REDIRECT . '=' . urlencode($request->query(static::QUERY_STRING_REDIRECT));
             }
