@@ -118,7 +118,10 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             ];
         }
 
-        $hybridConfig['base_url'] = $this->appendRedirectQueryString($hybridConfig['base_url'], $request->query(static::QUERY_STRING_REDIRECT));
+        $hybridConfig['base_url'] = $this->_appendRedirectQueryString(
+            $hybridConfig['base_url'],
+            $request->query(static::QUERY_STRING_REDIRECT)
+        );
 
         $hybridConfig['base_url'] = Router::url($hybridConfig['base_url'], true);
 
@@ -212,11 +215,12 @@ class HybridAuthAuthenticate extends BaseAuthenticate
             $returnTo = $this->config('hauth_return_to');
         }
 
-        $returnTo = $this->appendRedirectQueryString($returnTo, $request->query(static::QUERY_STRING_REDIRECT));
+        $returnTo = $this->_appendRedirectQueryString(
+            $returnTo,
+            $request->query(static::QUERY_STRING_REDIRECT)
+        );
 
-        $returnTo = Router::url($returnTo, true);
-
-        $params = ['hauth_return_to' => $returnTo];
+        $params = ['hauth_return_to' => Router::url($returnTo, true)];
         if ($provider === 'OpenID') {
             $params['openid_identifier'] = $request->query($this->_config['fields']['openid_identifier']);
         }
@@ -433,11 +437,13 @@ class HybridAuthAuthenticate extends BaseAuthenticate
     }
 
     /**
+     * Append the "redirect" query string param to URL.
+     *
      * @param string|array $url URL
      * @param string $redirectQueryString Redirect query string
      * @return string URL
      */
-    protected function appendRedirectQueryString($url, $redirectQueryString)
+    protected function _appendRedirectQueryString($url, $redirectQueryString)
     {
         if (!$redirectQueryString) {
             return $url;
