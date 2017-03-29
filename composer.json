@@ -12,9 +12,8 @@
   "license": "MIT",
   "require": {
     "cakephp/cakephp": "~3.0",
-    "hybridauth/hybridauth": "2.4.*"
+    "hybridauth/hybridauth": "2.9.*"
   },
-  "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
       "ADmad\\HybridAuth\\": "src"
