@@ -14,7 +14,7 @@
     "license": "MIT",
     "require": {
         "cakephp/cakephp": "~3.1",
-        "hybridauth/hybridauth": "~2.8"
+        "hybridauth/hybridauth": "^2.9.1"
     },
     "autoload": {
         "psr-4": {
