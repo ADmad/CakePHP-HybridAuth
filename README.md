@@ -134,7 +134,7 @@ Your controller's login action should be similar to this:
 
 ```php
 public function login() {
-    if ($this->request->is('post') || $this->request->query('provider')) {
+    if ($this->request->is('post')) {
         $user = $this->Auth->identify();
         if ($user) {
             $this->Auth->setUser($user);
@@ -154,11 +154,14 @@ On your login page you can create links to initiate authentication using require
 providers. Specify the provider name using variable named `provider` in query string.
 
 ```php
-echo $this->Html->link(
+echo $this->Form->postLink(
     'Login with Google',
     ['controller' => 'Users', 'action' => 'login', '?' => ['provider' => 'Google']]
 );
 ```
+We use a POST link here instead of a normal link to prevent search bots and other crawlers
+from following the link. (Adding "nofollow" attribute to link doesn't suffice as
+it's often ignored by bots/crawlers.)
 
 Once a user is authenticated through the provider the authenticator gets the user
 profile from the identity provider and using that tries to find the corresponding
@@ -178,6 +181,8 @@ public function initialize(array $config)
 public function createUser(\Cake\Event\Event $event) {
     // Entity representing record in social_profiles table
     $profile = $event->data()['profile'];
+
+    // Make sure here that all the required fields are actually present
 
     $user = $this->newEntity(['email' => $profile->email]);
     $user = $this->save($user);
