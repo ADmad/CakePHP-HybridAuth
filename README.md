@@ -159,8 +159,9 @@ echo $this->Form->postLink(
     ['controller' => 'Users', 'action' => 'login', '?' => ['provider' => 'Google']]
 );
 ```
-We must use a post link here instead of a normal link, as search bots and other tools otherwise follow the link.
-It also simplifies the login action code, as they all expect post requests then.
+We use a POST link here instead of a normal link to prevent search bots and other crawlers
+from following the link. (Adding "nofollow" attribute to link doesn't suffice as
+it's often ignored by bots/crawlers.)
 
 Once a user is authenticated through the provider the authenticator gets the user
 profile from the identity provider and using that tries to find the corresponding
