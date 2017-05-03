@@ -127,7 +127,7 @@ $this->loadComponent('Auth', [
 ]);
 ```
 
-__Note:__ When specifying `loginRedirect` & `loginAction` URLs for AuthComponent be sure to add
+__Note:__ When specifying `loginRedirect` and `loginAction` URLs for AuthComponent be sure to add
 `'plugin' => false` (or appropiate plugin name) to the URL array.
 
 Your controller's login action should be similar to this:
