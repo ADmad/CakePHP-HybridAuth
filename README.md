@@ -1,3 +1,6 @@
+If you are using CakePHP 3.4+ checkout my [ADmad/cakephp-social-auth](https://github.com/ADmad/cakephp-social-auth) instead.
+----------------------------------------------------------------------------------------------------------------------------
+
 CakePHP HybridAuth Plugin
 =========================
 
