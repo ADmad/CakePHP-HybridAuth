@@ -173,15 +173,19 @@ event. You must setup a listener for this event which save new user record to
 your users table and return an entity for the new user. Here's how you can setup
 a method of your `UsersTable` as callback for the event.
 
+If you also want to monitor all logins - and execute e.g. a login counter - you can listen for the `HybridAuth.login` event.
+
 ```php
 public function initialize(array $config)
 {
     $this->hasMany('ADmad/HybridAuth.SocialProfiles');
 
     \Cake\Event\EventManager::instance()->on('HybridAuth.newUser', [$this, 'createUser']);
+    \Cake\Event\EventManager::instance()->on('HybridAuth.login', [$this, 'updateUser']);
 }
 
-public function createUser(\Cake\Event\Event $event) {
+public function createUser(\Cake\Event\Event $event) 
+{
     // Entity representing record in social_profiles table
     $profile = $event->data()['profile'];
 
@@ -196,6 +200,30 @@ public function createUser(\Cake\Event\Event $event) {
 
     return $user;
 }
+
+public function updateUser(\Cake\Event\Event $event, array $user) 
+{
+    $this->updateAll(['logins = logins + 1', 'last_login' => new FrozenTime()], ['id' => $user['id']]);
+}
+```
+
+Additionally, you can also get a flash message for login back using the `HybridAuth.login` event:
+```php
+// In your AppController
+    public function initialize()
+    {
+        EventManager::instance()->on('HybridAuth.login', [$this->MyComponent, 'updateUser']);
+    }
+
+// In your MyComponent
+    public $components = [
+        'Flash'
+    ];
+
+    public function updateUser(Event $event, array $user)
+    {
+        $this->Flash->success(__('You are now logged in'));
+    }
 ```
 
 Twitter & email addresses
