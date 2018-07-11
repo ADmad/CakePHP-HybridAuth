@@ -50,6 +50,8 @@ class HybridAuthController extends AppController
         if ($user) {
             $this->Auth->setUser($user);
 
+            $this->dispatchEvent('HybridAuth.login', ['user' => $user]);
+
             return $this->redirect($this->Auth->redirectUrl());
         }
 
